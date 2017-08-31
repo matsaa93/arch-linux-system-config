@@ -1,0 +1,8 @@
+# autostart systemd default session on tty1
+if [[ "$(tty)" == '/dev/tty1' ]]; then
+    exec startx
+fi
+# autostart systemd default session on tty2
+if [[ "$(tty)" == '/dev/tty2' ]]; then
+    exec startx
+fi

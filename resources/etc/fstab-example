@@ -1,0 +1,14 @@
+# /etc/fstab: static file system information.
+#
+# Use 'blkid' to print the universally unique identifier for a
+# device; this may be used with UUID= as a more robust way to name devices
+# that works even if disks are added and removed. See fstab(5).
+#
+# you can also use the lsblk -o "<option>,<option>" this can be done like this:
+# lsblk -o "NAME,MAJ:MIN,RM,SIZE,RO,FSTYPE,MOUNTPOINT,UUID"
+# this wil give a full info about disk's and mount point for single partition/disk do this: 
+# lsblk -o "NAME,MAJ:MIN,RM,SIZE,RO,FSTYPE,MOUNTPOINT,UUID" /dev/sda1
+#
+# <file system>                 <mount point>      <type>         <options>         <dump>  <pass>
+# UUID=XXXX-XXXX-XXXX-XXXX-XXXX /PATH              FSTYPE	 defaults,noatime     0       0
+
