@@ -1,4 +1,5 @@
 #!/bin/zsh
+echo "start pacman.sh"
 #this is essential packages for arch linux install
 Pm_i() { pacman -S $ins && clear }
 Pm_u() { pacman -Syu && clear }
@@ -83,7 +84,16 @@ ins_mics() { ### OTHER MICS
 }
 ##
 pacmanauto() {
+    echo "Initiate AUTO FUNCTION pacman.sh"
     ins_repo
+    ins_intel
+    ins_bluez
+    ins_acl
+    ins_archive
+    ins_soundvid
+    ins_yaourt
+    ins_pacgui
+    echo "Finished AUTO FUNCTION pacman.sh"
 }
 for c in $@; do ins_$c; done
 echo "pacman finished"
