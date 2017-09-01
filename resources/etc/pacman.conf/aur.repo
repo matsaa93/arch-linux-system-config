@@ -1,0 +1,4 @@
+# added from aur.repo during install
+[archlinuxfr]
+SigLevel = Never
+Server = http://repo.archlinux.fr/$arch

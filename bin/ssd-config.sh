@@ -168,6 +168,20 @@ fsrtimsystemd() {
 ### START AUTO_FUNCTION SECTION
 auto_conf() {
     echo "$damsg"
+    diskschedule
+    disk_check
+    optfs="enter one of thease option for Trim deamon : cron | systemd :"
+    read trimc
+    case $trimc in
+        cron) fstrimcron
+            ;;
+        systemd) fstrimcron
+            ;;
+        *) echo "please enter the correct option"
+            echo "$optfs"
+            ;;
+    esac
+
 }
 ### END AUTO_FUNCTION SECTION
 

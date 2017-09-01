@@ -1,5 +1,5 @@
 ### config-script
-arch=$(cd $(dirname "$0") && pwd)
+# arch=$(cd $(dirname "$0") && pwd)
 usage() {
     echo "Usage:$0 [options]"
     echo "      options: ssd_config | install_zsh | add_groups | add_user | add_logo "
@@ -60,7 +60,7 @@ done
 install_zsh() {
 echo "set zsh as shell"
 # usermod -s /usr/bin/zsh root
-cd $arch/zsh/
+cd $arbin/zsh/
 chmod a+x zsh-install.sh
 ./zsh-install.sh
 cd $arch
@@ -137,8 +137,8 @@ systemctl set-default multi-user.target
 auto_config() {
     echo "this a auto function for install and may fail if something fails check the files for typos"
     echo "starting auto config in 5 sec if you wish to stop and do it manual hit [ctrl] + [c] "
-    sleep 5 && set_locale && sleep 1 && ssd_config && sleep 1 && install_zsh && sleep 1 && services && sleep 1 && add_groups && sleep 1 && add_admin && sleep 1 && add_user && sleep 1 && add_hostname
+    sleep 5 && set_locale && sleep 1 && ssd_config  && sleep 1 && services && sleep 1 && add_groups && sleep 1 && add_admin && sleep 1 && add_user && sleep 1 && add_hostname
 }
-for c in $*; do $c; done
+for c in $@; do $c; done
 #grub-install --recheck /dev/sd
-#grub-mkconfig -o /boot/grub/grub.cfg
+#grub-binconfig -o /boot/grub/grub.cfg

@@ -1,0 +1,3 @@
+# multilib 32-bit-libs added during install
+[multilib]
+ include = /etc/pacman.d/mirrorlist

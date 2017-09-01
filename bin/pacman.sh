@@ -4,15 +4,16 @@ Pm_i() { pacman -S $ins && clear }
 Pm_u() { pacman -Syu && clear }
 Pm_db() { pacman -Syy && clear }
 Gb_mk() { grub-mkconfig -o /boot/grub/grub.cfg }
+
 ins_repo() { ### REPOSETORY INSTALLL
-echo "#
-[multilib]
-include = /etc/pacman.d/mirrorlist
-#
-[archlinuxfr]
-SigLevel = Never
-Server = http://repo.archlinux.fr/\$arch" >> /etc/pacman.conf
-Pm_db
+    repo=$(ls $pacc)
+    cd $pacc
+    for r in $repos
+    do
+        cat $r >> /etc/pacman.conf
+    done
+    popd
+    Pm_db
 }
 #
 ins_intel() { ### INTEL MICROCODE
@@ -81,6 +82,8 @@ ins_mics() { ### OTHER MICS
     ins="lib32-libldap" && pm_i
 }
 ##
-
+pacmanauto() {
+    ins_repo
+}
 for c in $@; do ins_$c; done
 echo "pacman finished"
