@@ -18,6 +18,13 @@
 
 ### START FUNCTION SECTION
 disktypetest() {
+    #
+    # this checks for NVMe in system by checking for availability of
+    # block /dev/nvme0n1 or /dev/nvme0n2 as that's the default location
+    # if dev is available it sets the $partget variable-command to support NVMe
+    # since lsblk has limitations of how it outputs the code and when it
+    # has a nvme there is more characters in the name and needs correction
+    #
     testnvme1="/dev/nvme0n1p1"
     testnvme2="/dev/nvme0n1p2"
     testnvme3="/dev/nvme0n2p1"
@@ -28,18 +35,20 @@ disktypetest() {
        elif [ -b $testnvme2 ] ; then
           partget=$(lsblk -o "NAME,MOUNTPOINT" | grep -i "/" | cut -c "7-16")
           echo "nvme ssd detected"
-       elif [ -b $testnvme2 ] ; then
+       elif [ -b $testnvme3 ] ; then
               partget=$(lsblk -o "NAME,MOUNTPOINT" | grep -i "/" | cut -c "7-16")
               echo "nvme ssd detected"
-       elif [ -b $testnvme2 ] ; then
+       elif [ -b $testnvme4 ] ; then
               partget=$(lsblk -o "NAME,MOUNTPOINT" | grep -i "/" | cut -c "7-16")
               echo "nvme ssd detected"
        else
        partget=$(lsblk -o "NAME,MOUNTPOINT" | grep -i "/" | cut -c "7-11")
        echo "normal check no NVMe"
     fi
+    echo "$partget"
 
 }
+
 disk_check(){
     ### disk Check
     # this checks if a disk is rotational or not
@@ -61,18 +70,16 @@ disk_check(){
         smcmd=$(smartctl -i /dev/$sd | grep -i "Solid State Device" | cut -c "19-36")
         case $smcmd in
             "Solid State Device") ## NON ROTATIONAL CONFIRM {SSD/NVMe}
-                echo "/dev/$sd is an Solid State Device"
-                echo "giving it a OK for TRIM check"
+                print -P "$ssdcmsg"
                 ssdpart="$ssdpart $sd"
                 ssdmtp="$ssdmtp $partgetmtp"
                 echo "# /dev/$sd was on $partgetmtp during install" >> $tmpdr/$sd.txt
                 ;;
             *) ## ROTATIONAL CONFIRM {HDD}
-                echo "Partition /dev/$sd is an Hard Disk Drive"
-                echo "giving it a NO for TRIM check"
+                print -P "$hddcmsg"
                 echo "# /dev/$sd was on $partgetmtp during install" >> $tmpdr/$sd.txt
              ;;
-     esac
+        esac
      sleep 2
      clear
  done
@@ -91,6 +98,7 @@ DPress(){
     echo -n "| Write Inn And Pres {ENTER} $~:"
     read ssdr
 }
+
 editconfirm(){
     #
     ### confirm to edit file
@@ -112,7 +120,7 @@ shedrule(){
     #
     ### select R/W schedule rule variable
     #
-    PS3="Select your prefered disk R/W Shedule for $shmsg :"
+    PS3="$shedmsg"
     select sdru in deadline noop cfg
     do
         case $sdru in
@@ -166,10 +174,10 @@ crcase() { ## cron choise
     do
         clear
         case $cr in
-            daily) crms=" daily " && echo -e "$crmsg1" && crond="$daily" && break ;;
-            weekly) crms="weekly " && echo -e "$crmsg1" && crond="$weekly" && break ;;
-            monthly) crms="monthly" && echo -e "$crmsg1" && crond="$monthly" && break ;;
-            *) crms="weekly " && echo -e "$crmsg1" && crond="/etc/cron.weekly" && break ;;
+            daily) crms=" daily " && print -P "$crmsg1" && crond="$daily" && break ;;
+            weekly) crms="weekly " && print -P "$crmsg1" && crond="$weekly" && break ;;
+            monthly) crms="monthly" && print -P "$crmsg1" && crond="$monthly" && break ;;
+            *) crms="weekly " && print -P "$crmsg1" && crond="/etc/cron.weekly" && break ;;
         esac
     done
 }
@@ -177,7 +185,6 @@ crcase() { ## cron choise
 fstrim_cron() {
     crcase
 	cronfile="$crond/trim-ssd.sh"
-	orgcrond="$resources/$crond"
 	orgcronfile="$orgcrond/trim-ssd.sh"
     if [ $ssdmtp = ]; then
         echo "no ssd detected by disk check or disk chesk has not yet been run"
@@ -185,7 +192,7 @@ fstrim_cron() {
         echo "ssd detected and has an active partition/s at $ssdmtp"
         fl="$ssdmtp"
     fi
-	echo "$fscrmsg1"
+	print -P "$fscrmsg1"
 	if [ -f $cronfile ]; then
 		echo "file is there all ok"
 		else
@@ -195,7 +202,7 @@ fstrim_cron() {
 	fi
 
 	if [ $fl = ]; then
-		echo "$fscrmsg2"
+		print -P "$fscrmsg2"
 		msg="Remember to NOT Input / at start--"
 		DPress
 		fl="$ssdr"
@@ -220,7 +227,7 @@ fstrim_cron() {
 
 fsrtim_systemd() {
 	echo "enabling fstrim thru systemd"
-	echo "this will enable trim for supported filesystem weekly!"
+	print -P "this will enable trim for supported filesystem weekly!"
 	systemctl enable fstrim.service
 	systemctl enable fstrim.timer
 	systemctl status fstrim.service
@@ -230,7 +237,7 @@ fsrtim_systemd() {
 
 ### START AUTO_FUNCTION SECTION
 auto_conf() {
-    echo "$damsg"
+    print -P "$damsg"
     disk_schedule
     disk_check
     optfs="enter one of thease option for Trim deamon : cron | systemd :"
@@ -256,18 +263,18 @@ disk-menu() {
     #
     # MENU
     #
-    select dmenu in disk_check disk_schedule fstrim_cron fsrtim_systemd auto_config back exit
+    select option in disk_check disk_schedule fstrim_cron fsrtim_systemd auto_config back exit
     do
         clear
-        case dm in
-            back) echo "back to main menu" && break ;;
-            exit) echo "exiting disk-script menu Bye!" && exit 0 ;;
-            *_*) echo "$dm is a valid option continuing" && echo "executing the command_function $dm" >> $tmpdr/install.log
+        case $option in
+            back) print -P "$menubk"  && break ;;
+            exit) print -P "$menuex"  && exit 0 ;;
+            *_*) print -P  "$menuvalid" && echo "executing the command_function $dm" >> $tmpdr/install.log
                 $dm
-                msg="finished $dm from menu disk-script.sh"
+                msg="finished $dm from Disk Menu"
                 DPress && echo "$msg" >> $tmpdr/install.log
                 ;;
-            *) echo "Warning please enter a valid number: { 1..7 }" ;;
+            *) print -P "$CF[1] Warning please enter a valid number: { 1..7 }%f" ;;
         esac
     done
 }

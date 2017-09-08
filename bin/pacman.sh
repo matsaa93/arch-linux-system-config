@@ -7,7 +7,7 @@ Pm_db() { pacman -Syy && clear }
 Gb_mk() { grub-mkconfig -o /boot/grub/grub.cfg }
 
 ins_repo() { ### REPOSETORY INSTALLL
-    repo=$(ls $pacc)
+    repos=$(ls $pacc)
     cd $pacc
     for r in $repos
     do

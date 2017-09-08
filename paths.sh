@@ -18,6 +18,8 @@ export arudev="$aretc/udev/rules.d"
 export udev="/etc/udev/rules.d"
 ## pacman.conf Repo directory
 export pacc="$aretc/pacman.conf"
+## cron
+orgcrond="$resources/cron"
 
 ### /boot
 export arboot="$resources/boot"

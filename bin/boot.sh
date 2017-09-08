@@ -1,6 +1,6 @@
 #!/bin/zsh
 #
-bootinstall() {
+mdbootloader_install() {
 echo "initiating $0"
 botcfe="/boot/loader/entries"
 ## initial install
@@ -27,7 +27,7 @@ loadmdedit() {
     " > /boot/loader/loader.conf
 }
 
-config_entry(){
+config_entry() {
 if [ -f $botcfe/arch.conf ] && [ -f $botcfe/arch-bash.conf ] && [ -f $botcfe/arch-zsh.conf ]; then
     echo "all files are there"
 else
@@ -50,30 +50,189 @@ else
     clear
 
 
-
+    optbt="rw"
     PS3="$kbomsg"
     #
-    select option in default nvidia-drm costum
+    select option in set-root btrfs-subvol default nvidia-drm costum clear_options back exit
     do
         lsblk
-        echo "enter the name of your root partition"
-        echo "like sda2 or nvme0p2"
+
         ## USER INPUT ROOT partition
-        read rtfs
+        #read rtfs
         ##variable for PARTUUID
         partuid=$(blkid -s PARTUUID -o value /dev/$rtfs)
-        defoptbt="rw quiet splash"
+        defoptbt="quiet splash"
         case option in
-            default) optbt="$defoptbt" && bootmdedit && break ;;
-            nvidia-drm) optbt="$defoptbt nvidia-drm.modeset=1" && bootmdedit && break ;;
-            costum) echo "default options are : $defoptbt : nvidia-drm add nvidia-drm.modeset=1" && echo " : enter your option : "
-                read optbt && bootmdedit && break ;;
-            *) echo "invalid input please input a number between  {1..3} "
+            default) optbt="$optbt $defoptbt" && echo "$optbt is the options added to list" ;;
+            nvidia-drm) optbt="$optbt nvidia-drm.modeset=1" && echo "$optbt is the options added to list" ;;
+            costum) echo "default options are : $defoptbt : nvidia-drm add nvidia-drm.modeset=1"
+                echo "$optbt is the options alredy added to the list" && echo " : enter your options : "
+                read roptbt
+                optbt="$optbt $roptbt" ;;
+            btrfs-subvol) echo "enter the subvol that is the ROOT :" && read btsvol
+            optbt="$optbt rootflags=subvol=$btsvol"
+            ;;
+            set-root) echo "enter the name of your root partition" && echo "like sda2 or nvme0p2"
+             read rtfs
+            ;;
+            clear_options) print -P "$menuclear" && optbt="rw"
+            ;;
+            finish_write) bootmdedit && break ;;
+            back) print -P "$menusbk" && break ;;
+            exit) print -P "$menuex" && exit 0 ;;
+            *) print -P "$menuinvalid { 1..9 } "
             ;;
         esac
     #echo "finalising writhing entries and loader.conf"
     done
 fi
+}
 
-echo "finished $0"
+write_mods() {
+   echo "# MODULES ADDED by Arch linux System Config scripts
+   MODULES=\"$mkmodules\" #btrfs modules" >> $tmpdr/mkinitcpio.conf
+}
+
+set_mods() {
+    #
+    ## MODULES write to mkinitcpio.conf for linux image generation
+    #
+
+    ## modules for mkinitcpio.conf
+    nvidiamod="nvidia nvidia_modeset nvidia_uvm nvidia_drm" && ext4mod="ext4" && btrfsmod="btrfs" && nvmemod="nvme"
+    PS3="$modmsg"
+    select modcfg in nvidia-drm ext4 btrfs nvme clear_options finish-write back exit
+    do
+        case $modcfg in
+            nvidia-drm) mkmodules="$mkmodules $nvidiamod" && print -P "$CF[99] $nvidiamod $modsg1"
+                print -P "$modmsg2" && sleep 1
+                ;;
+            ext4) mkmodules="$mkmodules $ext4mod" && print -P "$CF[99] $ext4mod $modsg1"
+                print -P "$modmsg2" && sleep 1
+                ;;
+            btrfs) mkmodules="$mkmodules $btrfsmod" &&  print -P "$CF[99] $btrfsmod $modsg1"
+                print -P "$modmsg2" && sleep 1
+                ;;
+            nvme) mkmodules="$mkmodules $nvmemod" && print -P "$CF[99] $nvmemod $modsg1"
+                print -P "$modmsg2" && sleep 1
+                ;;
+            finish-write) print -P "$menunext" && write_mods
+                break ;;
+            clear_options) print -P "$menuclear" && mkmodules=""
+                ;;
+            back) print -P "$menusbk" && break ;;
+            exit) print -P "$menuex" && exit 0 ;;
+            *) print -P "$menuinvalid { 1..8 } "
+                ;;
+        esac
+    done
+}
+
+write_hooks() {
+echo "# HOOKS ADDED by Arch Linux System Config scripts
+HOOKS=\"$mkhooks\" #btrfs modules" >> $tmpdr/mkinitcpio.conf
+}
+
+set_hooks() {
+    ## hooks for mkinitcpio.conf
+    defaulthooks="base udev usr systemd filesystems" && fsckhook="fsck" && detecthook="autodetect" && btrfshook="btrfs"
+    modprobehook="modconf" && resumehook="resume"
+    PS3="$hookmsg"
+    select hokcfg in  defaults fsck modprobe btrfs resume autodetect clear_options finish-write back exit
+    do
+    clear
+        case $hokcfg in
+            defaults) mkhooks="$mkhooks $defaulthooks" && print -P "$CF[99] $defaulthooks $hookmsg1"
+            print -P "$hookmsg2"
+            ;;
+            fsck) mkhooks="$mkhooks $fsckhook" && print -P "$CF[99] $fsckhook $hookmsg1"
+            print -P "$hookmsg2"
+            ;;
+            btrfs) mkhooks="$mkhooks $btrfshook" && print -P "$CF[99] $btrfshook $hookmsg1"
+            print -P "$hookmsg2"
+            ;;
+            resume) mkhooks="$mkhooks $resumehook" && print -P "$CF[99] $resumehook $hookmsg1"
+            print -P "$hookmsg2"
+            ;;
+            autodetect) mkhooks="$mkhooks $detecthook" && print -P "$CF[99] $detecthook $hookmsg1"
+            print -P "$hookmsg2"
+            ;;
+            modprobe) mkhooks="$mkhooks $modprobehook" && print -P "$CF[99] $modprobehook $hookmsg1"
+            print -P "$hookmsg2"
+            ;;
+            finish-write) print -P "$menunext" && write_hooks
+            break ;;
+            clear_options) print -P "$menuclear" && mkhooks=""
+            ;;
+            back) print -P "$menusbk" && break ;;
+            exit) print -P "$menuex" && exit 0 ;;
+            *) print -P "$menuinvalid { 1..10 } "
+            ;;
+        esac
+    done
+}
+
+AUR_kernels() {
+# wget https://aur.archlinux.org/packages/linux-rt/
+# echo "rederecting to kernel.sh"
+adminmsg="enter your Administrator password not root-pass if they are different~: "
+PS3="$aurkmsg"
+select kertype in linux-rt linux-nvidia-rt linux-mainline linux-ck
+    do
+        case $kertype in
+        linux-rt) echo "$adminmsg"
+            su -l admin -c 'yaourt -S linux-rt linux-rt-headers'
+            ;;
+        linux-nvidia-rt) echo "$adminmsg"
+            su -l admin -c 'yaourt -S linux-rt linux-rt-headers nvidia-rt'
+            ;;
+        linux-mainline) echo "$adminmsg"
+            su -l admin -c 'yaourt -S linux-mainline linux-mainline-headers'
+            ;;
+        linux-ck) echo "$adminmsg"
+            su -l admin -c 'yaourt -S linux-ck linux-ck-headers' ;;
+        linux-nvidia-ck)echo "$adminmsg"
+            su -l admin -c 'yaourt -S linux-ck linux-ck-headers nvidia-ck'
+            ;;
+            back) print -P "$menusbk" && break ;;
+            exit) print -P "$menuex" && exit 0 ;;
+        esac
+    done
+}
+OFFI_kernels() {
+
+}
+
+edit-linux() {
+    #
+    #
+    #
+    [ -f $tmpdr/mkinitcpio.conf ] || cat $aretc/mkinitcpio.conf > $tmpdr/mkinitcpio.conf && echo "File made ready for configuration in $tmpdr"
+    PS3="$edlinuxmsg"
+    select edlinux in add_modules add_hooks add_nvidia_pacman-hook remove_nvidia-pacman-hook write-changes generate-linux-image back exit
+    do
+    case $edlinux in
+        add_modules) ;;
+        add_hooks) ;;
+        add_nvidia-pacman-hook) cp -r $aretc/nvidia.hook /etc/pacman.d/hooks/nvidia.hook
+        echo "pacman hook added now the kernel will update/generate evry time a nvidia update is done"
+        ;;
+        remove_nvidia-pacman-hook) rm /etc/pacman.d/hooks/nvidia.hook
+        echo "pacman hook is now removed from /etc/pacman.d/hooks/nvidia.hook" ;;
+        normal-write-changes)  ;;
+        custum-write-changes) ;;
+        generate-linux-image) ;;
+        back) print -P "$menusbk" && break ;;
+        exit) print -P "$menuex" && exit 0 ;;
+        *) print -P "$menuinvalid { 1.. }" ;;
+
+    esac
+    done
+
+
+
+echo "MODULES+=\"nvidia nvidia_modeset nvidia_uvm nvidia_drm\" #Nvivia modules" >> $tmpdr/mkinitcpio.conf
+echo "MODULES+=\"nvme\" #Nvme modules" >> $tmpdr/mkinitcpio.conf
+
+
 }
