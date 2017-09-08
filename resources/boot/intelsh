@@ -1,0 +1,4 @@
+title 		Arch Linux sh
+linux 		/vmlinuz-linux
+initrd 		/intel-ucode.img
+initrd 		/initframfs-linux.img

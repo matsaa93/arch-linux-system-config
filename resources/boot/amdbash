@@ -1,0 +1,3 @@
+title 		Arch Linux bash
+linux 		/vmlinuz-linux
+initrd 		/initframfs-linux.img

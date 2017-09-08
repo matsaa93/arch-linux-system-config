@@ -15,6 +15,7 @@ ins_repo() { ### REPOSETORY INSTALLL
     done
     popd
     Pm_db
+    ins="archlinuxcn-keyring" && Pm_i
 }
 #
 ins_intel() { ### INTEL MICROCODE
@@ -70,19 +71,23 @@ ins_archive() { ### ARCHIVING TOOLS
 #
 ins_acl() { ### Acess Control List
     echo "Access Control List"
-    ins="acl" &&  pm_i
+    ins="acl" &&  Pm_i
 }
 #
 ins_bluez() { ### Bluetooth
     echo "bluez"
-    ins="bluez bluez-utils" && pm_i
+    ins="bluez bluez-utils" && Pm_i
 }
 #
 ins_mics() { ### OTHER MICS
     echo "mics"
-    ins="lib32-libldap" && pm_i
+    ins="lib32-libldap" && Pm_i
 }
 ##
+ins_xyne() {
+    echo "installing packages from xyne repo"
+    ins="powerpill repoman fehbg-mgr alsaequal-mgr xrandr-mgr" && Pm_i
+}
 pacmanauto() {
     echo "Initiate AUTO FUNCTION pacman.sh"
     ins_repo
@@ -93,6 +98,7 @@ pacmanauto() {
     ins_soundvid
     ins_yaourt
     ins_pacgui
+    ins_xyne
     echo "Finished AUTO FUNCTION pacman.sh"
 }
 for c in $@; do ins_$c; done
