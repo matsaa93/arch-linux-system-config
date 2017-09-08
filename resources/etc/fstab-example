@@ -10,5 +10,5 @@
 # lsblk -o "NAME,MAJ:MIN,RM,SIZE,RO,FSTYPE,MOUNTPOINT,UUID" /dev/sda1
 #
 # <file system>                 <mount point>      <type>         <options>         <dump>  <pass>
-# UUID=XXXX-XXXX-XXXX-XXXX-XXXX /PATH              FSTYPE	 defaults,noatime     0       0
+# UUID=XXXX-XXXX-XXXX-XXXX-XXXX /PATH              FSTYPE	 noatime,defaults      0       0
 

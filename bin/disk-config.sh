@@ -9,22 +9,45 @@
 # for stability set noatime as mount option on the ssd's it spares the SSD
 # by limiting logging
 ## END
-usage() {
-    echo "$msgdmenu"
-}
+
+
 
 ### START MESSAGES SECTION
 # is moved to message.sh
 ### END MESSAGES SECTION
 
 ### START FUNCTION SECTION
+disktypetest() {
+    testnvme1="/dev/nvme0n1p1"
+    testnvme2="/dev/nvme0n1p2"
+    testnvme3="/dev/nvme0n2p1"
+    testnvme4="/dev/nvme0n2p2"
+    if [ -b $testnvme1 ] ; then
+       partget=$(lsblk -o "NAME,MOUNTPOINT" | grep -i "/" | cut -c "7-16")
+       echo "nvme ssd detected"
+       elif [ -b $testnvme2 ] ; then
+          partget=$(lsblk -o "NAME,MOUNTPOINT" | grep -i "/" | cut -c "7-16")
+          echo "nvme ssd detected"
+       elif [ -b $testnvme2 ] ; then
+              partget=$(lsblk -o "NAME,MOUNTPOINT" | grep -i "/" | cut -c "7-16")
+              echo "nvme ssd detected"
+       elif [ -b $testnvme2 ] ; then
+              partget=$(lsblk -o "NAME,MOUNTPOINT" | grep -i "/" | cut -c "7-16")
+              echo "nvme ssd detected"
+       else
+       partget=$(lsblk -o "NAME,MOUNTPOINT" | grep -i "/" | cut -c "7-11")
+       echo "normal check no NVMe"
+    fi
+
+}
 disk_check(){
     ### disk Check
     # this checks if a disk is rotational or not
     # and retuns true or false
     ##END
+    disktypetest
     partgetmtp=$(lsblk -o "MOUNTPOINT" /dev/$sd | grep -i "/")
-    partget=$(lsblk -o "NAME,MOUNTPOINT" | grep -i "/" | cut -c "7-11")
+    #partget=$(lsblk -o "NAME,MOUNTPOINT" | grep -i "/" | cut -c "7-11")
     # echo "$partget"
     for e in $partget; do
         mntcheck=$(lsblk -o "UUID,MOUNTPOINT,FSTYPE" /dev/$e | grep -i "/")
@@ -63,7 +86,7 @@ penter(){
     read nothing
 }
 
-Press(){
+DPress(){
     echo -n "$msg"
     echo -n "| Write Inn And Pres {ENTER} $~:"
     read ssdr
@@ -72,15 +95,19 @@ editconfirm(){
     #
     ### confirm to edit file
     #
-    press
-    case ssdr in
-        yes) echo "OK then we edit the file"
-            cat $filein.$rule > $fileut
+    PS3="$editmsg"
+    select ed in do-edit dont-edit
+    do
+        case $ed in
+        do-edit) echo "OK then we edit the file"
+            cat $filein-$rule.rules > $fileut && break
             ;;
-        no) echo "OK proseeding no edit" ;;
-        *) echo "yes or no!" && editconfirm ;;
+        *) echo "OK proseeding no edits for $fileut" && break
+        ;;
     esac
+    done
 }
+
 shedrule(){
     #
     ### select R/W schedule rule variable
@@ -88,7 +115,7 @@ shedrule(){
     PS3="Select your prefered disk R/W Shedule for $shmsg :"
     select sdru in deadline noop cfg
     do
-        case sdru in
+        case $sdru in
             deadline) rule="deadline" && break ;;
             noop) rule="noop" && break ;;
             cfg) rule="cfg" && break ;;
@@ -96,12 +123,13 @@ shedrule(){
         esac
     done
 }
+
 disk_schedule() {
     #
     ### file variables
     #
-    ssdshed="$arudev/60-ssd-schedulers"
-    hddshed="$arudev/60-hdd-schedulers"
+    ssdshed="$arudev/60-ssd"
+    hddshed="$arudev/60-hdd"
     ussdshed="$udev/60-ssd-scheduler.rules"
     uhddshed="$udev/60-hdd-scheduler.rules"
     #
@@ -110,11 +138,10 @@ disk_schedule() {
     shmsg="SSD's/NVMe"
     shedrule
 	if [ -f $ussdsched ]; then
-        msg="file alredy present do you want to prossed with editing: $ussdshed"
         filein="$ssdshed" && fileut="$ussdshed" && editconfirm
 	else
 		echo "enabling $rule for ssd & NVMe"
-		cat $ssdsched.$rule > $ussdsched
+		cat $ssdsched-$rule.rules > $ussdsched
 	fi
     #
     ### enable R/W schedule.rule for HDD {deadline,cfg,noop}
@@ -122,11 +149,10 @@ disk_schedule() {
     shmsg="HDD's"
     shedrule
     if [ -f $uhddsched ]; then
-        msg="file alredy present do you want to prossed with editing: $uhddshed"
         filein="$hddshed" && fileut="$uhddshed" && editconfirm
     else
         echo " enabling $rule for HDD's "
-        cat $hddsched.$rule > $uhddsched
+        cat $hddsched-$rule.rules > $uhddsched
     fi
 }
 
@@ -171,7 +197,7 @@ fstrim_cron() {
 	if [ $fl = ]; then
 		echo "$fscrmsg2"
 		msg="Remember to NOT Input / at start--"
-		Press
+		DPress
 		fl="$ssdr"
 	fi
 
@@ -221,11 +247,10 @@ auto_conf() {
 
 }
 ### END AUTO_FUNCTION SECTION
-menu() {
+disk-menu() {
     #
     ### DISK MENU FUNCTION
     #
-    usage
     clear
     PS3="$msgdmenu"
     #
@@ -240,7 +265,7 @@ menu() {
             *_*) echo "$dm is a valid option continuing" && echo "executing the command_function $dm" >> $tmpdr/install.log
                 $dm
                 msg="finished $dm from menu disk-script.sh"
-                penter && echo "$msg" >> $tmpdr/install.log
+                DPress && echo "$msg" >> $tmpdr/install.log
                 ;;
             *) echo "Warning please enter a valid number: { 1..7 }" ;;
         esac
@@ -249,6 +274,5 @@ menu() {
 
 ### START INPUT ARGUMENTS SECTION
 # for i in $@; do
-    $1
 # done
 ### END INPUT ARGUMENTS SECTION

@@ -1,5 +1,6 @@
 #!/bin/zsh
 #
+bootinstall() {
 echo "initiating $0"
 botcfe="/boot/loader/entries"
 ## initial install
@@ -9,6 +10,7 @@ else
     echo " installing systemd-boot loader"
     bootctl install
 fi
+}
 #
 #bootedit function
 bootmdedit() {
@@ -17,6 +19,7 @@ bootmdedit() {
     [ -f /boot/loader/entries/arch-bash.conf ] && echo "options root=PARTUUID=$partuid $optbt init=/bin/bash" >> $botcfe/arch-bash.conf
     [ -f /boot/loader/entries/arch-zsh.conf ] && echo "options root=PARTUUID=$partuid $optbt init/bin/zsh" >> $botcfe/arch-zsh.conf
 }
+
 loadmdedit() {
     echo "
     timeout 10
@@ -24,6 +27,7 @@ loadmdedit() {
     " > /boot/loader/loader.conf
 }
 
+config_entry(){
 if [ -f $botcfe/arch.conf ] && [ -f $botcfe/arch-bash.conf ] && [ -f $botcfe/arch-zsh.conf ]; then
     echo "all files are there"
 else
@@ -44,26 +48,9 @@ else
     done
     loadmdedit
     clear
-    kbomsg="
-                                                                                                      '/\'
-                                                                                                     '//\\'
-# : ############################### Kernel Boot Options ############################################'//-\`\\'
-# : enable kernel boot options/parameters for more info visit links below;                  #      '//.o-\`\\'
-# : https://www.kernel.org/doc/Documentation/admin-guide/kernel-parameters.txt              #     '//.ooo+\`\\'
-# : https://wiki.archlinux.org/index.php/Kernel_parameters                                  #    '//\`+oooo/\`\\'
-# : usefull links if costumasing the kernel parameters.                                     #   '//\`+oooooo:\`\\'
-# : enable default or enable nvidia.drm.modeset=1 or input other custom options for systemd.#  '//\`-+ooooooo:\`\\'
-# : ################################# : ########### : ####################################### '//\`/:-:++oooo+:\`\\'
-# : #-------------------------------# : ########### : #------------------------------#       '//\`/++++/+++++++:\`\\'
-# : ################################# : Description : ################################      ',/\`/+++ooooooooooo/\`\,'
-# : if you enable nvidia.drm i recommand you to add                                  #     '/\`/ooosssso++osssssso+\`\'
-# : MODULES+=\"nvidia nvidia_modeset nvidia_uvm nvidia_drm\" : to /etc/mkinitcpio.conf      '/.oossssso-\`\`\`\`/ossssss+\`\'
-# : as it is stated at the Arch-Linux Wiki under                                     #   '/-osssssso.      :ssssssso.\'
-# : https://wiki.archlinux.org/index.php/NVIDIA#DRM_kernel_mode_setting              #  '/:osssssss/        osssso+++.\'
-# : ################### : ############################################################'//osssssssss/        +sssssooo/-\'
-# : #-----------------# : #-------------------------------------------------------- #'/\`/ossssso+/:-        -:/+osssso+-\`\
-# : valid inputs {1..3} : "
-    #
+
+
+
     PS3="$kbomsg"
     #
     select option in default nvidia-drm costum
@@ -79,11 +66,14 @@ else
         case option in
             default) optbt="$defoptbt" && bootmdedit && break ;;
             nvidia-drm) optbt="$defoptbt nvidia-drm.modeset=1" && bootmdedit && break ;;
-            costum) echo "default options are : $defoptbt : nvidia-drm add nvidia-drm.modeset=1" echo " : enter your option : " && read optbt && bootmdedit && break ;;
+            costum) echo "default options are : $defoptbt : nvidia-drm add nvidia-drm.modeset=1" && echo " : enter your option : "
+                read optbt && bootmdedit && break ;;
             *) echo "invalid input please input a number between  {1..3} "
+            ;;
         esac
     #echo "finalising writhing entries and loader.conf"
     done
 fi
 
 echo "finished $0"
+}

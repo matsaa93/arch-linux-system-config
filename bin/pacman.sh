@@ -15,7 +15,7 @@ ins_repo() { ### REPOSETORY INSTALLL
     done
     popd
     Pm_db
-    ins="archlinuxcn-keyring" && Pm_i
+    #ins="archlinuxcn-keyring" && Pm_i
 }
 #
 ins_intel() { ### INTEL MICROCODE
@@ -43,52 +43,31 @@ ins_codecs() { ### MULTIMEDIA CODEC's
     echo "xine ffmpeg"
     ins="xine xine-lib ffmpeg" && Pm_i
 }
+#### YAOURT (AUR)
+ins_yaourt() { echo "yaourt" && ins="yaourt" && Pm_i }
+#### VLC VideoLAN Media Player
+ins_vlc() { echo "vlc" && ins="vlc" && Pm_i }
+#### Pacman Gui Installer
+ins_pacgui() { echo "pacman Gui" && ins="pamac-aur" && Pm_i }
+#### ARCHIVING TOOLS
+ins_archive() { echo "archiving" && ins="p7zip p7zip-plugins unrar tar rsync" && Pm_i }
+#### Acess Control List
+ins_acl() { echo "Access Control List" && ins="acl" &&  Pm_i }
+#### Bluetooth
+ins_bluez() {  echo "bluez" && ins="bluez bluez-utils" && Pm_i }
 #
-ins_yaourt() { ### YAOURT (AUR)
-    echo "yaourt"
-    ins="yaourt" && Pm_i
-}
-#
-ins_vlc() { ### VLC VideoLAN Media Player
-    echo "vlc"
-    ins="vlc" && Pm_i
-}
-#
-ins_soundvid() { ### VIDEO SUOND SYSTEM
-     echo "Sound & Video"
-     ins_alsa && ins_codecs && ins_vlc
-}
-#
-ins_pacgui() { ### Pacman Gui Installer
-    echo "pacman Gui"
-    ins="pamac-aur" && Pm_i
-}
-#
-ins_archive() { ### ARCHIVING TOOLS
-    echo "archiving"
-    ins="p7zip p7zip-plugins unrar tar rsync" && Pm_i
-}
-#
-ins_acl() { ### Acess Control List
-    echo "Access Control List"
-    ins="acl" &&  Pm_i
-}
-#
-ins_bluez() { ### Bluetooth
-    echo "bluez"
-    ins="bluez bluez-utils" && Pm_i
-}
-#
-ins_mics() { ### OTHER MICS
-    echo "mics"
-    ins="lib32-libldap" && Pm_i
-}
+ins_mics() { echo "mics" && ins="lib32-libldap" && Pm_i }
 ##
-ins_xyne() {
-    echo "installing packages from xyne repo"
-    ins="powerpill repoman fehbg-mgr alsaequal-mgr xrandr-mgr" && Pm_i
+
+ins_xyne() { echo "installing packages from xyne repo" && ins="powerpill repoman fehbg-mgr alsaequal-mgr xrandr-mgr" && Pm_i }
+
+ins_readedid() { echo "installing read-edid" && ins="read-edid i2c-tools" && Pm_i }
+
+#ins_name() { echo "lol" }
+#### VIDEO SUOND SYSTEM
+ins_soundvid() { echo "Sound & Video" && ins_alsa && ins_codecs && ins_vlc }
 }
-pacmanauto() {
+auto_pacman() {
     echo "Initiate AUTO FUNCTION pacman.sh"
     ins_repo
     ins_intel
@@ -99,7 +78,20 @@ pacmanauto() {
     ins_yaourt
     ins_pacgui
     ins_xyne
+    ins_readedid
     echo "Finished AUTO FUNCTION pacman.sh"
 }
-for c in $@; do ins_$c; done
+pacmenu() {
+    PS3="$pacmenumsg"
+    select pcmenu in ins_repo ins_intel ins_bluez ins_acl ins_archive ins_yaourt ins_pacgui ins_xyne ins_readedid ins_soundvid auto_pacman back exit
+    do
+        case $pcmenu in
+            back) echo "back to main menu" && break ;;
+            exit) echo "Ok you want to exit Bye! then" && exit 0 ;;
+            *_*) echo "you have chosen to install $pcmenu " && $pcmenu ;;
+            *) echo "invalid option valid options are between { 1..13 }" ;;
+        esac
+    done
+}
+#for c in $@; do ins_$c; done
 echo "pacman finished"

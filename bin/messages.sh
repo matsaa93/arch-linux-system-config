@@ -129,9 +129,15 @@ export fscrmsg1="
      # like /home, /ROOT, /etc....            ##
       ## END ##################################
 "
-export fscrmsg2="     # enable trim chose where to enable it, it is on root by default
+export fscrmsg2="
+     # enable trim chose where to enable it, it is on root by default
      # type inn partition path (where it is mounted) f.ex: mnt home media/data
      # if something seems off edit or disable /etc/cron.daily/trim-ssd.sh"
+
+export editmsg="
+   # file alredy present do you want to prossed with editing: #
+   #   $shmsg: $fileut #
+   ### please enter the correct number {yes 1..2 no} :"
 
 ### END SECTION disk-config.sh 
 
@@ -149,4 +155,25 @@ dtmsg="
 
 
 ### END SECTION desktop.sh
+
+### SECTION boot.sh
+kbomsg="
+    # : ############################### Kernel Boot Options #####################################
+    # : enable kernel boot options/parameters for more info visit links below;                  #
+    # : https://www.kernel.org/doc/Documentation/admin-guide/kernel-parameters.txt              #
+    # : https://wiki.archlinux.org/index.php/Kernel_parameters                                  #
+    # : usefull links if costumasing the kernel parameters.                                     #
+    # : enable default or enable nvidia.drm.modeset=1 or input other custom options for systemd.#
+    # : ################################# : ########### : #######################################
+    # : #-------------------------------# : ########### : #------------------------------#
+    # : ################################# : Description : ################################
+    # : if you enable nvidia.drm i recommand you to add                                  #
+    # : MODULES+=\"nvidia nvidia_modeset nvidia_uvm nvidia_drm\" : to /etc/mkinitcpio.conf
+    # : as it is stated at the Arch-Linux Wiki under                                     #
+    # : https://wiki.archlinux.org/index.php/NVIDIA#DRM_kernel_mode_setting              #
+    # : ################### : ############################################################
+    # : #-----------------# : #-------------------------------------------------------- #
+    # : valid inputs {1..3} : "
+
+### END SECTION boot.sh
 
