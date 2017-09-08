@@ -1,23 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="64186c46-46a0-470b-9eb0-8d3800f99be1" name="Default" comment="added single files for shedulers &#10;fixed other missing things in shripts&#10;started to chage files to single start file">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/resources/etc/udev/rules.d/60-hdd-cfg.rules" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/resources/etc/udev/rules.d/60-hdd-deadline.rules" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/resources/etc/udev/rules.d/60-hdd-noop.rules" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/resources/etc/udev/rules.d/60-ssd-cfg.rules" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/resources/etc/udev/rules.d/60-ssd-deadline.rules" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/resources/etc/udev/rules.d/60-ssd-noop.rules" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/resources/etc/pacman.conf/archlinuxcn.repo" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/resources/etc/udev/rules.d/60-hdd-schedulers.rules" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/resources/etc/udev/rules.d/60-ssd-schedulers.rules" afterPath="" />
+    <list default="true" id="64186c46-46a0-470b-9eb0-8d3800f99be1" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/bin/boot.sh" afterPath="$PROJECT_DIR$/bin/boot.sh" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/bin/disk-config.sh" afterPath="$PROJECT_DIR$/bin/disk-config.sh" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/bin/messages.sh" afterPath="$PROJECT_DIR$/bin/messages.sh" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/bin/pacman.sh" afterPath="$PROJECT_DIR$/bin/pacman.sh" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/resources/etc/fstab-example" afterPath="$PROJECT_DIR$/resources/etc/fstab-example" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/resources/etc/mkinitcpio.conf" afterPath="$PROJECT_DIR$/resources/etc/mkinitcpio.conf" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -364,6 +349,14 @@
       <option name="presentableId" value="Default" />
       <updated>1504836084530</updated>
     </task>
+    <task id="LOCAL-00001" summary="added single files for shedulers &#10;fixed other missing things in shripts&#10;started to chage files to single start file">
+      <created>1504860141959</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1504860141960</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -398,6 +391,7 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
+    <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <MESSAGE value="added single files for shedulers &#10;fixed other missing things in shripts&#10;started to chage files to single start file" />
     <option name="LAST_COMMIT_MESSAGE" value="added single files for shedulers &#10;fixed other missing things in shripts&#10;started to chage files to single start file" />
   </component>
