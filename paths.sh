@@ -6,36 +6,51 @@ base=$(cd $(dirname "$0") && pwd)
 export arch="$base"
 ## tmp/
 export tmpdr="$arch/tmp"
-mkdir $tmpdr
+[ -d $tmpdr ] || echo "missing dirrectory trying to create one" && mkdir -p $tmpdr
 ## bin/*
 export arbin="$arch/bin"
 ## resources/*
-export resources="$arch/resources"
-export arzsh="$resources/etc/skel"
-export aretc="$resources/etc"
+botcfe="/boot/loader/entries"
+resources="$arch/resources"
+arzsh="$resources/etc/skel"
+aretc="$resources/etc"
 ## rules.d
-export arudev="$aretc/udev/rules.d"
-export udev="/etc/udev/rules.d"
+arudev="$aretc/udev/rules.d"
+udev="/etc/udev/rules.d"
 ## pacman.conf Repo directory
-export pacc="$aretc/pacman.conf"
+pacc="$aretc/pacman.conf"
 ## cron
 orgcrond="$resources/cron"
 
 ### /boot
-export arboot="$resources/boot"
+arboot="$resources/boot"
 ## #END PATH set
 ## Retreve messages
 zsh $arbin/messages.smessages.sh
-
-menu() {
+source $arbin/boot.sh
+source $arbin/color-vars.sh
+source $arbin/config-script.sh
+source $arbin/desktop.sh
+source $arbin/disk-config.sh
+source $arbin/messages.sh
+source $arbin/pacman.sh
+source $arbin/zsh-install.sh
+minlog() { x=$1 && print -P  "$menuvalid" && echo "Starting $0~: $1" >> $tmpdr/install.log }
+inlog() { echo "Starting $0~: $1" >> $tmpdr/install.log }
+utlog() { echo "Finished $0~: $1" >> $tmpdr/install.log }
+main_menu() {
     PS3="$msgmain"
-select main in config-menu disk-menu boot-menu
+select main_menu_option in config-menu disk-menu boot-menu
 do
-    case main in
+    clear
+    x=$main_menu_option
+    case $main_menu_option in
         exit) ;;
-        config-menu) ;;
-        disk-menu) ;;
-        boot-menu) ;;
+        *-*)
+        minlog $main_menu_option
+        $main_menu_option
+        utlog $main_menu_option
+        ;;
         *) ;;
     esac
 done

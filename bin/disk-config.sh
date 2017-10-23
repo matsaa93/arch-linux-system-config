@@ -188,6 +188,7 @@ fstrim_cron() {
 	orgcronfile="$orgcrond/trim-ssd.sh"
     if [ $ssdmtp = ]; then
         echo "no ssd detected by disk check or disk chesk has not yet been run"
+
     else
         echo "ssd detected and has an active partition/s at $ssdmtp"
         fl="$ssdmtp"
@@ -266,15 +267,23 @@ disk-menu() {
     select option in disk_check disk_schedule fstrim_cron fsrtim_systemd auto_config back exit
     do
         clear
+        x=$option
         case $option in
-            back) print -P "$menubk"  && break ;;
-            exit) print -P "$menuex"  && exit 0 ;;
-            *_*) print -P  "$menuvalid" && echo "executing the command_function $dm" >> $tmpdr/install.log
-                $dm
+            back)
+                print -P "$menubk"  && break
+            ;;
+            exit)
+                print -P "$menuex"  && exit 0
+            ;;
+            *_*)
+                minlog
+                $option
                 msg="finished $dm from Disk Menu"
                 DPress && echo "$msg" >> $tmpdr/install.log
-                ;;
-            *) print -P "$CF[1] Warning please enter a valid number: { 1..7 }%f" ;;
+            ;;
+            *)
+                print -P "$CF[1] Warning please enter a valid number: { 1..7 }%f"
+            ;;
         esac
     done
 }

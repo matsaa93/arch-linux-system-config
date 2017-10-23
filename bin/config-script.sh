@@ -1,11 +1,11 @@
 #!/bin/zsh
 ### config-script
 # arch=$(cd $(dirname "$0") && pwd)
-inlog() {echo "Starting $0~: $x" >> $tmpdr/install.log }
-utlog() {echo "Finished $0~: $x" >> $tmpdr/install.log }
-usage() {
-    echo "$msgus"
-}
+inlog() { echo "Starting $0~: $1" >> $tmpdr/install.log }
+utlog() { echo "Finished $0~: $1" >> $tmpdr/install.log }
+#usage() {
+#    echo "$msgus"
+#}
 mlist=""
 #
 # Press_enter function reads out user input to variable
@@ -16,24 +16,22 @@ penter() {
 }
 
 press_enter() {
-    inlog
     echo "$msg"
     echo -n "Write inn and Press <Enter> to continue:"
     read input
-    utlog
+    utlog "press_enter"
 }
 #
 # LOCATION Config
 set_locale() {
-    inlog
     #
 	echo "set locale"
 	set -e -u
-	locgen=/etc/locale.gen
+	#locgen=/etc/locale.gen
 	zone="nn_NO nb_NO en_US"
 	for e in $zone; do
-		echo "$e.UTF-8 UTF-8" >> $locgen
-		echo "$e ISO-8859-1" >> $locgen
+		echo "$e.UTF-8 UTF-8" >> /etc/locale.gen
+		echo "$e ISO-8859-1" >> /etc/locale.gen
 	done
 	# sed -i 's/#\(nn_NO\.UTF-8\)/\1/' /etc/locale.gen
 	locale-gen
@@ -43,28 +41,33 @@ set_locale() {
 	ln -sf /usr/share/zoneinfo/Europe/Oslo /etc/localtime
 	hwclock --systohc --utc
     #
-    utlog
+    utlog "set_locale"
 }
 
 ssd_config() {
-    inlog
     #
 ssd="run"
 while [[ $ssd = "run" ]]; do
     echo -n "please enter yes or no ~:"
     read ssd
     case $ssd in
-        y|Y|YES|yes) echo "starting to configure for SSD" && ./ssd-config.sh ;;
-        n|N|NO|no) echo "OK NO SSD THEN YOU SHOULD THINK OF GETTING ONE" ;;
-        *) echo "that is not yes or no!" && ssd="run" ;;
+        y|Y|YES|yes)
+            echo "starting to configure for SSD"
+            ./ssd-config.sh && utlog "ssd_config_successfully_completed" || utlog "ssd_config_unsuccessful"
+        ;;
+        n|N|NO|no)
+            echo "OK NO SSD THEN YOU SHOULD THINK OF GETTING ONE" && utlog "ssd_config_IGNORED"
+        ;;
+        *)
+            echo "that is not yes or no!" && ssd="run" && utlog "ssd_config_warning"
+        ;;
     esac
 done
 #
-utlog
+
 }
 
 install_zsh() {
-    inlog
     # sh
     echo "set zsh as shell"
     # usermod -s /usr/bin/zsh root
@@ -73,11 +76,10 @@ install_zsh() {
     # ./zsh-install.sh
     # cd $arch
     #
-    utlog
+    utlog "install-zsh"
 }
 
 add_logo() {
-    inlog
 echo "
       # # # # # # # # # # # # # # # # # # # # # # # # # # ###
       ## # # # # # # # # # # # # # # # # # # # # # # # # # ##
@@ -92,10 +94,9 @@ echo "
       #  # # # # # #\-------------------------/# # # # # #  #
       ##%#################################################%##
 "
-utlog
+utlog "add_logo"
 }
 add_groups() {
-    inlog
     ### admin user config
     groupadd admin
     afolder="etc srv usr opt home media .snapshot"
@@ -105,28 +106,33 @@ add_groups() {
     sfolder="media srv opt"
     for foldb in $sfolder; do setfacl -m "g:standar:rwx" /$foldb ; done
     #
-    utlog
+    utlog "add_groups"
 }
 mlist+=" add_groups"
 
 add_tmpfs() {
-    inlog
     [[ -d $mountpt ]] || mkdir -p $mountpt
     echo "tmpfs                $mountpt    tmpfs defaults,noatime,mode=1777   0  0" >> /etc/fstab
-    utlog
+    utlog "add_tmpfs"
 }
 
 name_pass() {
-    inlog
     #
     msg="add a user name to your accont"
     press_enter
-    user="$input"
+    user=$input
     msg="add password to your user use a strong one with atleast i number and sign"
     press_enter
-    password="$input"
+    password=$input
+    msg="add the prefered-groups to list like this~:\"group1,group2,group3\""
+    cat /etc/group
+    press_enter
+    groups=$input
+    msg="add prefered shell for the user"
+    press_enter
+    shell=$input
     #
-    utlog
+    utlog "name_pass"
 }
 
 pw_root() {
@@ -135,37 +141,60 @@ pw_root() {
     usermod -p "$passrot" root
 }
 mlist+=" pw_root"
-
+users_add() {
+   #user=$1 ; password=$2 ; groups=$3 ; shell=$4
+   useradd -m -p "$2" -g admin -G $3 -s $4 $1
+   cp -aT /etc/skel/ /home/$1/
+   mountpt="/home/$1/.thumbnails"
+   add_tmpfs
+}
 add_admin() {
-    inlog
     #
     add_logo
     name_pass
-    useradd -m -p "$password" -g admin -G "adm,audio,http,ftp,floppy,disk,log,network,rfkill,video,scanner,storage,optical,games,wheel,users,kvm,input" -s /usr/bin/zsh $user
-    cp -aT /etc/skel/ /home/$user/
-    mountpt="/root/.thumbnails"
-    add_tmpfs
+    if [ -z ${groups+x} ] && [ -z ${shell+x} ]; then
+
+        users_add $user $password "adm,audio,http,ftp,floppy,disk,log,network,rfkill,video,scanner,storage,optical,games,wheel,users,input" /bin/zsh
+    elif [ -z ${groups+x} ] && ! [ -z ${shell+x} ]; then
+         users_add $user $password "adm,audio,http,ftp,floppy,disk,log,network,rfkill,video,scanner,storage,optical,games,wheel,users,input" $shell
+    elif ! [ -z ${groups+x} ] && [ -z ${shell+x} ]; then
+         users_add $user $password $groups /bin/zsh
+    else
+        users_add $user $password $groups $shell
+    fi
+    #useradd -m -p "$password" -g admin -G "" -s /usr/bin/zsh $user
+    #cp -aT /etc/skel/ /home/$user/
+    #mountpt="/home/$user/.thumbnails"
+    #add_tmpfs
     #
     utlog
 }
 mlist+=" add_admin"
 
 add_user() {
-    inlog
     #
     add_logo
     name_pass
-    useradd -m -p "$password" -g standar -G "users,http,audio,ftp,disk,network,storage,video,game,scanner,kvm,input" -s /usr/bin/zsh $user
-    cp -aT /etc/skel/ /home/$user/
-    mountpt="/home/$user/.thumbnails"
-    add_tmpfs
+        if [ -z ${groups+x} ] && [ -z ${shell+x} ]; then
+
+        users_add $user $password "users,http,audio,ftp,disk,network,storage,video,game,scanner,input" /bin/zsh
+    elif [ -z ${groups+x} ] && ! [ -z ${shell+x} ]; then
+         users_add $user $password "users,http,audio,ftp,disk,network,storage,video,game,scanner,input" $shell
+    elif ! [ -z ${groups+x} ] && [ -z ${shell+x} ]; then
+         users_add $user $password $groups /bin/zsh
+    else
+        users_add $user $password $groups $shell
+    fi
+    #useradd -m -p "$password" -g standar -G "users,http,audio,ftp,disk,network,storage,video,game,scanner,input" -s /usr/bin/zsh $user
+    #cp -aT /etc/skel/ /home/$user/
+    #mountpt="/home/$user/.thumbnails"
+    #add_tmpfs
     #
     utlog
 }
 mlist+=" add_user"
 
 add_hostname() {
-    inlog
     #
     read host
     echo "GNU-Arch-Linux-$host" > /etc/hostname
@@ -175,7 +204,6 @@ add_hostname() {
 }
 
 enable_services() {
-    inlog
     #
 echo "
       # # # # # # # # # # # # # # # # # # # # # # # # # # ###
@@ -198,19 +226,21 @@ utlog
 }
 
 auto_aug() {
-    inlog
     #
     echo "Automatic setup for admin & user's and groups & hostname"
+    inlog "add_groups"
     add_groups && sleep 1
+    inlog "add_admin"
     add_admin && sleep 1
+    inlog "add_user"
     add_user && sleep 1
+    inlog "add_hostname"
     add_hostname
     #
-    utlog
+    utlog "auto_aug"
 }
 
 auto_tmpfs() {
-    inlog
      #
 #    echo "proc                 /proc                proc defaults              0 0" >> /etc/fstab
 #    echo "sysfs                /sys                 sysfs noauto               0 0" >> /etc/fstab
@@ -223,11 +253,10 @@ auto_tmpfs() {
     mountpt="/var/spool" && add_tmpfs
     mountpt="/var/tmp" && add_tmpfs
     #
-    utlog
+    utlog "auto_tmpfs"
 }
 
 auto_config() {
-    inlog
     #
     echo "this a auto function for install and may fail if something fails check the files for typos"
     echo "starting auto config in 5 sec if you wish to stop and do it manual hit [ctrl] + [c] "
@@ -237,23 +266,25 @@ auto_config() {
     autoaug
     #
     autotmpfs
-    utlog
+    utlog "auto_config"
 }
 
 #mlist="zsh_install set_locale ssd_config pwroot add_groups add_admin add_user add_hostname auto_tmpfs auto_aug auto_config enable_services back exit"
-menu() {
+config-menu() {
     clear
     PS3="$msgus"
     #
-    select x in set_locale install_zsh ssd_config add_groups pw_root add_admin add_user add_hostname auto_aug auto_tmpfs auto_config enable_services back exit
+    select config_menu_option in set_locale install_zsh ssd_config add_groups pw_root add_admin add_user add_hostname auto_aug auto_tmpfs auto_config enable_services back exit
     do
         clear
-        case $x in
+        local x=$config_menu_option
+        case $config_menu_option in
             back) echo "back to main menu" && break ;;
             exit) echo "exiting $0 menu Bye!" && exit 0 ;;
-            *_*) echo "$x is a valid option continuing" && echo "executing the command_function $x" >> $tmpdr/install.log
-                $x
-                msg="finished $x from menu config-script.sh"
+            *_*)
+            minlog
+                $config_menu_option
+                msg="finished $config_menu_option from menu config-script.sh"
                 penter && echo "$msg" >> $tmpdr/install.log
                 ;;
             *) echo "Warning please enter a valid number: { 1..14 }" ;;
@@ -261,7 +292,6 @@ menu() {
     done
 }
 
-$1
 
 #for c in $@; do $c; done
 #grub-install --recheck /dev/sd

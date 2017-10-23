@@ -1,7 +1,7 @@
 #!/bin/zsh
 echo "start pacman.sh"
 #this is essential packages for arch linux install
-Pm_i() { pacman -S $ins && clear }
+Pm_i() { pacman -S $1 && clear }
 Pm_u() { pacman -Syu && clear }
 Pm_db() { pacman -Syy && clear }
 Gb_mk() { grub-mkconfig -o /boot/grub/grub.cfg }
@@ -54,19 +54,19 @@ ins_archive() { echo "archiving" && ins="p7zip p7zip-plugins unrar tar rsync" &&
 #### Acess Control List
 ins_acl() { echo "Access Control List" && ins="acl" &&  Pm_i }
 #### Bluetooth
-ins_bluez() {  echo "bluez" && ins="bluez bluez-utils" && Pm_i }
+ins_bluez() { echo "bluez" && ins="bluez bluez-utils" && Pm_i }
 #
-ins_mics() { echo "mics" && ins="lib32-libldap" && Pm_i }
+ins_mics() { echo "mics" && Pm_i "lib32-libldap" }
 ##
 
-ins_xyne() { echo "installing packages from xyne repo" && ins="powerpill repoman fehbg-mgr alsaequal-mgr xrandr-mgr" && Pm_i }
+ins_xyne() { echo "installing packages from xyne repo" && Pm_i "powerpill repoman fehbg-mgr alsaequal-mgr xrandr-mgr" }
 
-ins_readedid() { echo "installing read-edid" && ins="read-edid i2c-tools" && Pm_i }
+ins_readedid() { echo "installing read-edid" && Pm_i "read-edid i2c-tools" }
 
 #ins_name() { echo "lol" }
 #### VIDEO SUOND SYSTEM
 ins_soundvid() { echo "Sound & Video" && ins_alsa && ins_codecs && ins_vlc }
-}
+
 auto_pacman() {
     echo "Initiate AUTO FUNCTION pacman.sh"
     ins_repo
@@ -81,15 +81,56 @@ auto_pacman() {
     ins_readedid
     echo "Finished AUTO FUNCTION pacman.sh"
 }
-pacmenu() {
+
+ins_OhMyZsh() {
+    echo "START $0"
+echo "INSTALLING ZSH"
+    Pm_i "zsh zsh-completions"
+    chsh -s /usr/bin/zsh
+    cp -aT /etc/skel/ /root/
+    chmod 700 /root
+    Pm_i "git wget"
+echo "INSTALLING OH_MY_ZSH"
+    #powerline powerline-fonts oh-my-zsh
+    sh -c "$(wget https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O -)"
+echo "INSTALLING DEP POWERLINE "
+    Pm_i "powerline powerline-fonts powerline-vim python-powerline"
+    Pm_i "awesome-terminal-fonts"
+    Pm_i "fontforge"
+     git clone https://github.com/bhilburn/powerlevel9k.git ~/.oh-my-zsh/custom/themes/powerlevel9k
+     git clone git://github.com/zsh-users/zsh-autosuggestions ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions
+echo "POWERLINE INSTALL DEP FINALIZED"
+    # cp -r {.zshrc,.fonts,.oh-my-zsh} ~/
+    cp -r $arzsh/power-themes ~/.oh-my-zsh/custom/themes/
+    cp -r $arzsh/fontconfig ~/.config/
+    # fc-cache -fv ~/.fonts
+    cat $arzsh/.zshrc > ~/.zshrc
+echo "OH-MY-ZSH INSTALL FINALIZED"
+echo "INSTALLING VIM"
+    Pm_i "vim vim-plugins"
+    git clone https://github.com/amix/vimrc.git ~/.vim_runtime && sh ~/.vim_runtime/install_awesome_vimrc.sh
+echo "VIM INSTALL FINALIZED"
+echo "COPYING .zshrc,.oh-my-zsh,.vimrc,.vim_runtime to /etc/skel"
+    cp -r ~/{.zshrc,.oh-my-zsh,.vimrc,.vim_runtime} /etc/skel/
+    mkdir -p /etc/skel/.config
+    cp -r $arzsh/fontconfig /etc/skel/.config/
+echo "FINISHED copying all files"
+echo "FINIDHED $0"
+}
+
+pacman_menu() {
     PS3="$pacmenumsg"
-    select pcmenu in ins_repo ins_intel ins_bluez ins_acl ins_archive ins_yaourt ins_pacgui ins_xyne ins_readedid ins_soundvid auto_pacman back exit
+    select pcmenu in ins_OhMyZsh ins_repo ins_intel ins_bluez ins_acl ins_archive ins_yaourt ins_pacgui ins_xyne ins_readedid ins_soundvid auto_pacman back exit
     do
+    clear
         case $pcmenu in
-            back) echo "back to main menu" && break ;;
-            exit) echo "Ok you want to exit Bye! then" && exit 0 ;;
-            *_*) echo "you have chosen to install $pcmenu " && $pcmenu ;;
-            *) echo "invalid option valid options are between { 1..13 }" ;;
+            back) echo "$menubk" && break ;;
+            exit) echo "$menuex" && exit 0 ;;
+            *_*)
+            minlog $pcmenu
+            echo "you have chosen to install $pcmenu " && $pcmenu
+            ;;
+            *) echo "$menuinvalid { 1..13 }" ;;
         esac
     done
 }

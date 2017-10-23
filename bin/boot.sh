@@ -97,12 +97,12 @@ set_mods() {
     #
     ## MODULES write to mkinitcpio.conf for linux image generation
     #
-
     ## modules for mkinitcpio.conf
     nvidiamod="nvidia nvidia_modeset nvidia_uvm nvidia_drm" && ext4mod="ext4" && btrfsmod="btrfs" && nvmemod="nvme"
     PS3="$modmsg"
     select modcfg in nvidia-drm ext4 btrfs nvme clear_options finish-write back exit
     do
+    clear
         case $modcfg in
             nvidia-drm) mkmodules="$mkmodules $nvidiamod" && print -P "$CF[99] $nvidiamod $modsg1"
                 print -P "$modmsg2" && sleep 1
@@ -179,6 +179,7 @@ adminmsg="enter your Administrator password not root-pass if they are different~
 PS3="$aurkmsg"
 select kertype in linux-rt linux-nvidia-rt linux-mainline linux-ck
     do
+    clear
         case $kertype in
         linux-rt) echo "$adminmsg"
             su -l admin -c 'yaourt -S linux-rt linux-rt-headers'
@@ -199,9 +200,9 @@ select kertype in linux-rt linux-nvidia-rt linux-mainline linux-ck
         esac
     done
 }
-OFFI_kernels() {
+#OFFI_kernels() {
 
-}
+#}
 
 edit-linux() {
     #
@@ -209,30 +210,62 @@ edit-linux() {
     #
     [ -f $tmpdr/mkinitcpio.conf ] || cat $aretc/mkinitcpio.conf > $tmpdr/mkinitcpio.conf && echo "File made ready for configuration in $tmpdr"
     PS3="$edlinuxmsg"
-    select edlinux in add_modules add_hooks add_nvidia_pacman-hook remove_nvidia-pacman-hook write-changes generate-linux-image back exit
+    select edlinux in add_modules add_hooks add_nvidia_pacman-hook remove_nvidia-pacman-hook normal-write-changes custom-write-changes generate-linux-image back back-main exit
     do
+    clear
+
     case $edlinux in
-        add_modules) ;;
-        add_hooks) ;;
-        add_nvidia-pacman-hook) cp -r $aretc/nvidia.hook /etc/pacman.d/hooks/nvidia.hook
+        add_modules)
+        set_mods
+        ;;
+        add_hooks)
+        set_hooks
+        ;;
+        add_nvidia-pacman-hook)
+        cp -r $aretc/nvidia.hook /etc/pacman.d/hooks/nvidia.hook
         echo "pacman hook added now the kernel will update/generate evry time a nvidia update is done"
         ;;
-        remove_nvidia-pacman-hook) rm /etc/pacman.d/hooks/nvidia.hook
+        remove_nvidia-pacman-hook)
+        rm /etc/pacman.d/hooks/nvidia.hook
         echo "pacman hook is now removed from /etc/pacman.d/hooks/nvidia.hook" ;;
-        normal-write-changes)  ;;
-        custum-write-changes) ;;
-        generate-linux-image) ;;
-        back) print -P "$menusbk" && break ;;
+        normal-write-changes)
+        cp -r $tmpdr/mkinitcpio.conf /etc/mkinitcpio.conf
+        ;;
+        custom-write-changes)
+        echo "not active yet"
+        ;;
+        generate-linux-image)
+        PS3="select a image that you whant to generate"
+        select mkinitgen in linux linux-rt linux-nvidia-rt linux-mainline linux-ck linux-nvidia-ck
+        do
+        mkinitcpio -p $mkinitgen && break
+        done
+        ;;
+        back)
+        print -P $menusbk && break
+        ;;
+        back-main)
+        print -P $menubk && break 2
+        ;;
         exit) print -P "$menuex" && exit 0 ;;
         *) print -P "$menuinvalid { 1.. }" ;;
 
     esac
     done
+}
 
+boot-menu() {
+    PS3="$edlinuxmsg"
+    select edlinux in  back-main exit
+    do
 
+    done
 
-echo "MODULES+=\"nvidia nvidia_modeset nvidia_uvm nvidia_drm\" #Nvivia modules" >> $tmpdr/mkinitcpio.conf
-echo "MODULES+=\"nvme\" #Nvme modules" >> $tmpdr/mkinitcpio.conf
 
 
 }
+
+#echo "MODULES+=\"nvidia nvidia_modeset nvidia_uvm nvidia_drm\" #Nvivia modules" >> $tmpdr/mkinitcpio.conf
+#echo "MODULES+=\"nvme\" #Nvme modules" >> $tmpdr/mkinitcpio.conf
+
+

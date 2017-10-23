@@ -258,6 +258,6 @@ menunext="$CF[82] Prosseding To The Next Step of The Operation $CF[256]"
 menusbk="$CF[198] Back to Sub Menu $CF[256]"
 menubk="$CF[202] Back to Main Menu $CF[256]"
 menuex="$CF[202] Exiting Arch linux System Config Bye! $CF[256]"
-menuvalid="$CF[198] $option $CF[82] is a valid option continuing $CF[256]"
+menuvalid="$CF[198] $x $CF[82] is a valid option continuing $CF[256]"
 menuclear="$CF[81] Clearing selection there is no shame in return$CF[256]"
 ## END GENERAL SECTION
