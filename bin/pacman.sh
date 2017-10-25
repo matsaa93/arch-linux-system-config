@@ -20,12 +20,12 @@ ins_repo() { ### REPOSETORY INSTALLL
 #
 ins_intel() { ### INTEL MICROCODE
     echo "Intel Microcode"
-    ins="intel-ucode" && Pm_i
+    Pm_i "intel-ucode"
 }
 #
 ins_libreoffice() { ### Libre Office Liberate your Office ;P
     echo "Libre Office"
-    ins="libreoffice-still" && Pm_i
+    Pm_i "libreoffice-still"
 }
 #
 ins_alsa() { ### ALSA DRIVER & LIBs
@@ -101,7 +101,7 @@ isinstalled() {
                 echo true
                 else
                     echo false
-fi
+    fi
 }
 ins_OhMyZsh() {
     echo "INSTALLING/Checking Dependencies Availability"

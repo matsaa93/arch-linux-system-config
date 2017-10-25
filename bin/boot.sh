@@ -172,7 +172,7 @@ set_hooks() {
     done
 }
 
-AUR_kernels() {
+AUR-kernels() {
 # wget https://aur.archlinux.org/packages/linux-rt/
 # echo "rederecting to kernel.sh"
 adminmsg="enter your Administrator password not root-pass if they are different~: "
@@ -204,13 +204,13 @@ select kertype in linux-rt linux-nvidia-rt linux-mainline linux-ck
 
 #}
 
-edit-linux() {
+edit-linux-menu() {
     #
     #
     #
     [ -f $tmpdr/mkinitcpio.conf ] || cat $aretc/mkinitcpio.conf > $tmpdr/mkinitcpio.conf && echo "File made ready for configuration in $tmpdr"
     PS3="$edlinuxmsg"
-    select edlinux in add_modules add_hooks add_nvidia_pacman-hook remove_nvidia-pacman-hook normal-write-changes custom-write-changes generate-linux-image back back-main exit
+    select edlinux in add_modules add_hooks add_nvidia-pacman-hook remove_nvidia-pacman-hook normal-write-changes custom-write-changes generate-linux-image back back-main exit
     do
     clear
 
@@ -223,7 +223,7 @@ edit-linux() {
         ;;
         add_nvidia-pacman-hook)
         cp -r $aretc/nvidia.hook /etc/pacman.d/hooks/nvidia.hook
-        echo "pacman hook added now the kernel will update/generate evry time a nvidia update is done"
+        echo "pacman hook added now the kernel will update/generate every time a nvidia update is done"
         ;;
         remove_nvidia-pacman-hook)
         rm /etc/pacman.d/hooks/nvidia.hook
@@ -253,18 +253,63 @@ edit-linux() {
     esac
     done
 }
-
-boot-menu() {
-    PS3="$edlinuxmsg"
-    select edlinux in  back-main exit
-    do
-
-    done
-
+bootLoader-menu() {
+    PS3="$bootloader_menu_msg"
 
 
 }
 
+menu_valid() {
+    local x=$1
+    print -P "$menu_valid_msg" && $x
+}
+menu_invalid() {
+    local x=$1
+    print -P "$menu_invalid_msg {1...$x}"
+}
+menu_back() {
+    local x=$1
+    print -P "$menu_back_msg $x"
+    break
+}
+menu_back-main() {
+    local x=$1; local y=$2
+    print -P "$main_back_msg"
+    break $y
+}
+menu_exit() {
+    local x=$1
+    print -P "$menu_exit_msg"
+    exit 0
+}
+
+boot_menu() {
+    PS3="$boot_menu_message"
+    select boot_menu_options in values back-main exit
+    do
+        clear
+        case $boot_menu_options in
+            value)
+                menu_valid $boot_menu_options
+            ;;
+            back-main)
+                menu_back-main "boot_menu" 1
+            ;;
+            *_*)
+                menu_valid $boot_menu_options
+            ;;
+            *-*)
+                menu_valid $boot_menu_options
+            ;;
+            *)
+                menu_invalid 6
+            ;;
+            exit)
+                menu_exit
+            ;;
+        esac
+    done
+}
 #echo "MODULES+=\"nvidia nvidia_modeset nvidia_uvm nvidia_drm\" #Nvivia modules" >> $tmpdr/mkinitcpio.conf
 #echo "MODULES+=\"nvme\" #Nvme modules" >> $tmpdr/mkinitcpio.conf
 

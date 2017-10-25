@@ -26,13 +26,12 @@ orgcrond="$resources/cron"
 arboot="$resources/boot"
 ## #END PATH set
 ## Retreve messages
-zsh $arbin/messages.smessages.sh
+source $arbin/messages.sh
 source $arbin/boot.sh
 source $arbin/color-vars.sh
 source $arbin/config-script.sh
 source $arbin/desktop.sh
 source $arbin/disk-config.sh
-source $arbin/messages.sh
 source $arbin/pacman.sh
 source $arbin/zsh-install.sh
 minlog() { x=$1 && print -P  "$menuvalid" && echo "Starting $0~: $1" >> $tmpdr/install.log }

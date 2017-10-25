@@ -255,9 +255,14 @@ hookmsg2="$CF[82]current added hooks to line for HOOKS in mkinitcpio.conf is:
 ### GENERAL SECTION
 menuinvalid="$CF[1]invalid input $CF[82]please input a number between $CF[256]"
 menunext="$CF[82] Prosseding To The Next Step of The Operation $CF[256]"
-menusbk="$CF[198] Back to Sub Menu $CF[256]"
-menubk="$CF[202] Back to Main Menu $CF[256]"
+menusbk="$CF[198] Returning from Menu $CF[82] $x $CF[256]"
+menubk="$CF[202] Back to Main Menu from Menu $CF[82] $x  $CF[256]"
 menuex="$CF[202] Exiting Arch linux System Config Bye! $CF[256]"
 menuvalid="$CF[198] $x $CF[82] is a valid option continuing $CF[256]"
 menuclear="$CF[81] Clearing selection there is no shame in return$CF[256]"
 ## END GENERAL SECTION
+main_back_msg="$CF[202] Back to Main Menu from Menu $CF[82] $x  $CF[256]"
+menu_back_msg="$CF[198] Returning from Menu $CF[82] $x $CF[256]"
+menu_exit_msg="$CF[202] Exiting Arch linux System Config Bye! $CF[256]"
+menu_valid_msg="$CF[198] $x $CF[82] is a valid option continuing $CF[256]"
+menu_invalid_msg="$CF[1]invalid input $CF[82]please input a number between $CF[256]"
