@@ -166,7 +166,7 @@ dtmsg="
 ### END SECTION desktop.sh
 
 ### SECTION boot.sh
-kbomsg="
+Kernel_Boot_option_message="
     $CF[203]# : ###############################%B$CF[105] Kernel Boot Options %b$CF[203]#####################################$CF[256]
     $CF[203]# : $CF[111]enable kernel boot options/parameters for more info visit links below;                  $CF[203]#$CF[256]
     $CF[203]# : $CF[198]https://www.kernel.org/doc/Documentation/admin-guide/kernel-parameters.txt      $CF[203]        #$CF[256]
@@ -185,7 +185,7 @@ kbomsg="
     $CF[203]# : $CF[82]Valid inputs {1..3} : $CF[256]"
 
 ## AUR KERNEL MENU
-aurkmsg="
+AUR_Kernels_message="
   $CF[203]# : ################################## : ################### : ###################################$CF[256]
   $CF[203]# : #-------------------------------## :$CF[105] A.U.R Linux Kernels $CF[203]: #---------------------------------#$CF[256]
   $CF[203]# : ################################## : ################### : ###################################$CF[256]
@@ -226,30 +226,76 @@ aurkmsg="
     $CF[203]# : $CF[82]Valid inputs {1..3} : $CF[256]"
 
 
-modmsg="
+Module_menu_message="
+    $CF[203]# : ################################## : #################### : ###################################$CF[256]
+    $CF[203]# : #--------------------------------# : $CF[105] SET Kernel Modules $CF[203] : #---------------------------------#$CF[256]
+    $CF[203]# : ################################## : #################### : ###################################$CF[256]
+    $CF[203]# : # select the modules you need to add to the MODULES line in mkinitcpio                                         #$CF[256]
+    $CF[203]# : WikiLink : https://wiki.archlinux.org/index.php/Mkinitcpio#MODULES  Usefull info for chosing the right modules #$CF[256]
+    $CF[203]# : WikiLink : https://wiki.archlinux.org/index.php/Minimal_initramfs   Good if planning to build a LW kernel      #$CF[256]
     $CF[203]# : ################################## : ################### : ###################################$CF[256]
-    $CF[203]# : #--------------------------------# : SET Kernel Modules  : $CF[203]#---------------------------------#$CF[256]
+    $CF[203]# : #--------------------------------# : $CF[105]Options Description : $CF[203]#----------------------------------#$CF[256]
     $CF[203]# : ################################## : ################### : ###################################$CF[256]
-    $CF[203]# : # select the modules you need to add to the MODULES line in mkinitcpio                       #$CF[256]
+    $CF[203]# :  1.Module_Nvidia         :                                                                                    #$CF[256]
+    $CF[203]# :  2.Module_Nvidia_modeset :                                                                                    #$CF[256]
+    $CF[203]# :  3.Module_Nvidia_uvm     :                                                                                    #$CF[256]
+    $CF[203]# :  4.Module_Nvidia_drm     :                                                                                    #$CF[256]
+    $CF[203]# :  5.Module_ext4           :                                                                                    #$CF[256]
+    $CF[203]# :  6.Module_btrfs          :                                                                                    #$CF[256]
+    $CF[203]# :  7.Module_nvme           :                                                                                    #$CF[256]
+    $CF[203]# :  8.manual_add_Module     :                                                                                    #$CF[256]
+    $CF[203]# :  9.Clear_Modules         :                                                                                    #$CF[256]
+    $CF[203]# : 10.Write_Module          :                                                                                    #$CF[256]
+    $CF[203]# : 11.back                  :                                                                                    #$CF[256]
+    $CF[203]# : 12.exit                  :                                                                                    #$CF[256]
+    $CF[203]# : ################### : ###################################################################$CF[256]
+    $CF[203]# : #-----------------# : #-----------------------------------------------------------------#$CF[256]
+    $CF[203]# : $CF[82]Valid inputs {1..3} : $CF[256]"
+
+
+Module_Active_message="set as active module for mkinitcpio.conf"
+Module_ALL_Active_message="$CF[82]current added modules to line for MODULES in mkinitcpio.conf is:
+     $CF[198]$Module_Buffer_list $CF[256]"
+
+Hook_menu_message="
+    $CF[203]# : ################################## : ################## : ###################################$CF[256]
+    $CF[203]# : #--------------------------------# : $CF[105] SET Kernel Hooks $CF[203] : #---------------------------------#$CF[256]
+    $CF[203]# : ################################## : ################## : ###################################$CF[256]
+    $CF[203]# : # select the hooks you need to add to the Hooks line in mkinitcpio                        #$CF[256]
     $CF[203]# : options :                                                                                    #$CF[256]
     $CF[203]# : options :                                                                                    #$CF[256]
     $CF[203]# : ################################## : ################### : ###################################$CF[256]
     $CF[203]# : #--------------------------------# : $CF[105]Options Description : $CF[203]#---------------------------------#$CF[256]
     $CF[203]# : ################################## : ################### : ###################################$CF[256]
-    $CF[203]# : options :                                                                                    #$CF[256]
-    $CF[203]# : options :                                                                                    #$CF[256]
-    $CF[203]# : options :                                                                                    #$CF[256]
-    $CF[203]# : options :                                                                                    #$CF[256]
+    $CF[203]# :  1.hook_base        :                                                                         #$CF[256]
+    $CF[203]# :  2.hook_udev        :                                                                         #$CF[256]
+    $CF[203]# :  3.hook_usr         :                                                                         #$CF[256]
+    $CF[203]# :  4.hook_systmd      :                                                                         #$CF[256]
+    $CF[203]# :  5.hook_filesystems :                                                                         #$CF[256]
+    $CF[203]# :  6.hook_fsck        :                                                                         #$CF[256]
+    $CF[203]# :  7.hook_autodetect  :                                                                         #$CF[256]
+    $CF[203]# :  8.hook_btrfs       :                                                                         #$CF[256]
+    $CF[203]# :  9.hook_modconf     :                                                                         #$CF[256]
+    $CF[203]# : 10.hook_resume      :                                                                         #$CF[256]
+    $CF[203]# : 11.manual_add_Hooks :                                                                         #$CF[256]
+    $CF[203]# : 12.Clear_Hooks      :                                                                         #$CF[256]
+    $CF[203]# : 13.Write_Hooks      :                                                                         #$CF[256]
+    $CF[203]# : 14.back             :                                                                         #$CF[256]
+    $CF[203]# : 15.exit             :                                                                         #$CF[256]
     $CF[203]# : ################### : ###################################################################$CF[256]
     $CF[203]# : #-----------------# : #-----------------------------------------------------------------#$CF[256]
     $CF[203]# : $CF[82]Valid inputs {1..3} : $CF[256]"
-modmsg1="set as active module for mkinitcpio.conf"
-modmsg2="$CF[82]current added modules to line for MODULES in mkinitcpio.conf is:
-     $CF[198]$mkmodules $CF[256]"
-hookmsg=""
-hookmsg1="set as active hook for mkinitcpio.conf"
-hookmsg2="$CF[82]current added hooks to line for HOOKS in mkinitcpio.conf is:
-     $CF[198]$mkhooks $CF[256]"
+
+Hook_Active_message="set as active hook for mkinitcpio.conf"
+Hook_ALL_Active_message="$CF[82]current added hooks to line for HOOKS in mkinitcpio.conf is:
+     $CF[198]$Hooks_Buffer_list $CF[256]"
+
+    # Subsection edit linux
+    add_nvidia_pacman_hook_message="pacman hook added now the kernel will update/generate every time a nvidia update is done"
+    remove_nvidia_pacman_hook_message="pacman hook is now removed from /etc/pacman.d/hooks/nvidia.hook"
+    write_mkinitcpio_message="writing the mkinitcpio file"
+    generate_linux_image_mkinitcpio_message="select a image that you whant to generate"
+
 ### END SECTION boot.sh
 
 ### GENERAL SECTION
