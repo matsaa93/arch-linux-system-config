@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="BashSupportProjectSettings">
+    <option name="globalVariables">
+      <set>
+        <option value="AUR_Kernels_message" />
+        <option value="CF" />
+        <option value="GRUB_menu_message" />
+        <option value="Linux_menu_message" />
+        <option value="Module_ALL_Active_message" />
+        <option value="Module_Active_message" />
+        <option value="Module_menu_message" />
+        <option value="add_nvidia_pacman_hook_message" />
+        <option value="aretc" />
+        <option value="generate_linux_image_mkinitcpio_message" />
+        <option value="hook_ALL_Active_message" />
+        <option value="hook_Active_message" />
+        <option value="menu_back_msg" />
+        <option value="menu_exit_msg" />
+        <option value="menu_invalid_msg" />
+        <option value="menu_valid_msg" />
+        <option value="remove_nvidia_pacman_hook_message" />
+        <option value="tmpdr" />
+        <option value="write_mkinitcpio_message" />
+      </set>
+    </option>
+  </component>
+</project>

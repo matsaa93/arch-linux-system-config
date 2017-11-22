@@ -295,7 +295,10 @@ Hook_ALL_Active_message="$CF[82]current added hooks to line for HOOKS in mkinitc
     remove_nvidia_pacman_hook_message="pacman hook is now removed from /etc/pacman.d/hooks/nvidia.hook"
     write_mkinitcpio_message="writing the mkinitcpio file"
     generate_linux_image_mkinitcpio_message="select a image that you whant to generate"
-
+    #
+    #subsection boot
+    Systemd_bootloader_config_message=" : INTEL or AMD / with sh or bash or zsh or all :
+    : the last you select will be default-boot : "
 ### END SECTION boot.sh
 
 ### GENERAL SECTION

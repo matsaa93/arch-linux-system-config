@@ -1,18 +1,38 @@
 #!/bin/zsh
 #
-Boot_menu() {
+
+Linux_menu() {
+    #
+    # Linux_menu
+    #
+        #
+    # Linux_menu
+    #
+    PS3="$Linux_menu_message"
+    select Linux_menu_options in AUR_Kernels Edit_Linux_menu Boot_menu back exit
+    do
+
+
+    Boot_menu() {
     #
     # Boot_menu
     #
     PS3="$Boot_menu_message"
 
-    select Boot_menu_options in Systemd_Bootloader_menu GRUB_Bootloader_menu back exit
+    select Boot_menu_options in set-root set_btrfs_subvol_root set_efi_partition Systemd_Bootloader_menu GRUB_Bootloader_menu main_menu back exit
     do
     #
     #
+    set_efi_partition() { read esp_mount }
+    set-root() { echo "enter the name of your root partition" && echo "like sda2 or nvme0p2" && read Root_Filesystem }
+    set_btrfs_subvol_root() { echo "enter the subvol that is the ROOT :" && read Btrfs_root_subvol && Kernel_Option_Buffer="$Kernel_Option_Buffer rootflags=subvol=$Btrfs_root_subvol" }
     Systemd_Bootloader_menu(){
         #
         #
+        ## Systemd boot_menu
+        PS3="$Systemd_bootloader_menu_message"
+        select MD_menu_options in mdbootloader_install Systemd_bootloader_config back exit
+        do
         mdbootloader_install() {
         echo "initiating $0"
         botcfe="/boot/loader/entries"
@@ -28,9 +48,9 @@ Boot_menu() {
         #bootedit function
         MD_bootloader_write_entry() {
             echo "finalising writhing entries and loader.conf"
-            [ -f /boot/loader/entries/arch.conf ] && echo "options root=PARTUUID=$partuid $optbt" >> $botcfe/arch.conf
-            [ -f /boot/loader/entries/arch-bash.conf ] && echo "options root=PARTUUID=$partuid $optbt init=/bin/bash" >> $botcfe/arch-bash.conf
-            [ -f /boot/loader/entries/arch-zsh.conf ] && echo "options root=PARTUUID=$partuid $optbt init/bin/zsh" >> $botcfe/arch-zsh.conf
+            [ -f /boot/loader/entries/arch.conf ] && echo "options root=PARTUUID=$partuid $Kernel_Option_Buffer" >> $botcfe/arch.conf
+            [ -f /boot/loader/entries/arch-bash.conf ] && echo "options root=PARTUUID=$partuid $Kernel_Option_Buffer init=/bin/bash" >> $botcfe/arch-bash.conf
+            [ -f /boot/loader/entries/arch-zsh.conf ] && echo "options root=PARTUUID=$partuid $Kernel_Option_Buffer init/bin/zsh" >> $botcfe/arch-zsh.conf
         }
 
         loadmdedit() {
@@ -38,124 +58,104 @@ Boot_menu() {
             echo "default $loadbt.conf" >> /boot/loader/loader.conf        
         }
 
-        Systemd_bootloader_config() {
-        if [ -f $botcfe/arch.conf ] && [ -f $botcfe/arch-bash.conf ] && [ -f $botcfe/arch-zsh.conf ]; then
-            echo "all files are there"
-        else
-            PS3=" : INTEL or AMD / with sh or bash or zsh or all :
-    : the last you select will be default-boot : "
-            select p in intel intel_bash intel_zsh amd amd_bash amd_zsh next
-            do
-                case $p in
-                    intel) cp -r $arboot/intelsh $botcfe/arch.conf && loadbt="arch" 
-                    ;;
-                    intel_bash) cp -r $arboot/intelbash $botcfe/arch-bash.conf && loadbt="arch-bash" 
-                    ;;
-                    intel_zsh) cp -r $arboot/intelzsh $botcfe/arch-zsh.conf && loadbt="arch-zsh" 
-                    ;;
-                    amd) cp -r $arboot/amdsh $botcfe/arch.conf && loadbt="arch" 
-                    ;;
-                    amd_bash) cp -r $arboot/amdbash $botcfe/arch-bash.conf && loadbt="arch-bash" 
-                    ;;
-                    amd_zsh) cp -r $arboot/amdzsh $botcfe/arch-zsh.conf && loadbt="arch-zsh" 
-                    ;;
-                    next) echo "continuing" && break 
-                    ;;
-                    *) echo "error" ;;
-                esac
+            Systemd_bootloader_config() {
+                if [ -f $botcfe/arch.conf ] && [ -f $botcfe/arch-bash.conf ] && [ -f $botcfe/arch-zsh.conf ]; then
+                    echo "all files are there"
+                else
+                    PS3="$Systemd_bootloader_config_message"
+                    select p in intel intel_bash intel_zsh amd amd_bash amd_zsh next
+                    do
+                        case $p in
+                            intel) cp -r $arboot/intelsh $botcfe/arch.conf && loadbt="arch"
+                            ;;
+                            intel_bash) cp -r $arboot/intelbash $botcfe/arch-bash.conf && loadbt="arch-bash"
+                            ;;
+                            intel_zsh) cp -r $arboot/intelzsh $botcfe/arch-zsh.conf && loadbt="arch-zsh"
+                            ;;
+                            amd) cp -r $arboot/amdsh $botcfe/arch.conf && loadbt="arch"
+                            ;;
+                            amd_bash) cp -r $arboot/amdbash $botcfe/arch-bash.conf && loadbt="arch-bash"
+                            ;;
+                            amd_zsh) cp -r $arboot/amdzsh $botcfe/arch-zsh.conf && loadbt="arch-zsh"
+                            ;;
+                            next) echo "continuing" && break
+                            ;;
+                            *) echo "error" ;;
+                        esac
+                    done
+                    loadmdedit
+                    clear
+
+                    Buffer_Kernel_option(){
+                    local o=$1
+                    local bkor=false
+                    echo "checking if the variable is alredy stored"
+                    echo "the value you are adding is alredy in"
+                    echo "adding Kernel Option: $o : to \$Kernel_Option_Buffer"
+                    Kernel_Option_Buffer="${Kernel_Option_Buffer} $o"
+                    echo "New values are now: $Kernel_Option_Buffer :"
+                    }
+
+                    Manual_add_kernel_boot_option(){
+                    echo -n "Enter your option here: "
+                    read Read_Kernel_Option_Buffer
+                    echo "$Read_Kernel_Option_Buffer is the value you have entered"
+                    Buffer_Kernel_option  $Read_Kernel_Option_Buffer
+                    }
+                    partuid=$(blkid -s PARTUUID -o value /dev/$Root_Filesystem)
+                    PS3="$Kernel_Boot_option_message"
+                    select Kernel_boot_option_menu in rw "nvidia-drm.modeset=1" "nvidia-drm.modeset=0" "rootflags=subvol=$Btrfs_root_subvol" quiet splash Manual_add_kernel_boot_option clear_options main_menu Linux_menu Boot_menu back exit
+                    do
+                        lsblk
+                        if [ ${Kernel_boot_opton_menu} == "Manual_add_kernel_boot_option" ] || [ ${Kernel_boot_option_menu} == "clear_option_buffer" ] || [ $Kernel_boot_option_menu == "MD_bootloader_write_entry" ];then
+                        ${Kernel_boot_option_menu}
+                            elif [ ${Kernel_boot_opton_menu} == "back" ];then
+                            Systemd_Bootloader_menu
+                                elif [ ${Kernel_boot_opton_menu} == "exit" ];then
+                                exit 0
+                            else
+                            for opt in ${Kernel_boot_option_menu};do { Buffer_Kernel_option $opt } done
+                        fi
+                        #[[ ${Kernel_boot_option_menu} == "MD_bootloader_write_entry" ] || [ ${Kernel_boot_option_menu} == "MD_bootloader_write_entry" ] || [ ${Kernel_boot_option_menu} =="MD_bootloader_write_entry" ]] &&  ${Kernel_boot_option_menu}
+                        ## USER INPUT ROOT partition
+                        #read Root_Filesystem
+                        ##variable for PARTUUIDLinux_menu Boot_menu
+
+                    #echo "finalising writhing entries and loader.conf"
+                    done
+                fi
+            }
+            case_menu_boot $MD_menu_options Boot_menu
             done
-            loadmdedit
-            clear
-
-
-            optbt="rw"
-            PS3="$Kernel_Boot_option_message"
-            #
-            select option in set-root btrfs-subvol default nvidia-drm costum clear_options back exit
-            do
-                lsblk
-
-                ## USER INPUT ROOT partition
-                #read rtfs
-                ##variable for PARTUUID
-                partuid=$(blkid -s PARTUUID -o value /dev/$rtfs)
-                defoptbt="quiet splash"
-                case option in
-                    default) optbt="$optbt $defoptbt" && echo "$optbt is the options added to list" 
-                    ;;
-                    nvidia-drm) optbt="$optbt nvidia-drm.modeset=1" && echo "$optbt is the options added to list" 
-                    ;;
-                    costum) echo "default options are : $defoptbt : nvidia-drm add nvidia-drm.modeset=1"
-                    echo "$optbt is the options alredy added to the list" && echo " : enter your options : "
-                    read roptbt
-                    optbt="$optbt $roptbt" 
-                    ;;
-                    btrfs-subvol) echo "enter the subvol that is the ROOT :" && read btsvol
-                    optbt="$optbt rootflags=subvol=$btsvol"
-                    ;;
-                    set-root) echo "enter the name of your root partition" && echo "like sda2 or nvme0p2"
-                    read rtfs
-                    ;;
-                    clear_options) print -P "$menuclear" && optbt="rw"
-                    ;;
-                    finish_write) MD_bootloader_write_entry && break ;;
-                    back) Systemd_Bootloader_menu ;;
-                    exit) menu_exit ;;
-                    *) menu_invalid 9
-                    ;;
-                esac
-            #echo "finalising writhing entries and loader.conf"
-            done
-        fi
         }
-    
-        ## Systemd boot_menu
-            PS3="$Systemd_bootloader_menu_message"
-                select MD_menu_options in mdbootloader_install Systemd_bootloader_config back exit
-                do
-                case_menu_boot $MD_menu_options Boot_menu
-                done
-    }
-    GRUB_Bootloader_menu() {
-        echo
+        GRUB_Bootloader_menu() {
+        #
+        #
+        #
+        Grub_Install_EFI(){
+        [ -d ${esp_mount} ] && grub-install --target=x86_64-efi --efi-directory=${esp_mount} --bootloader-id=grub ||\
+        [ -d /boot/efi ] && grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=grub ||\
+        [ -d /boot/EFI ] && grub-install --target=x86_64-efi --efi-directory=/boot/EFI --bootloader-id=grub
+        }
+        Grub_Config_entry(){
+        [ -d ${esp_mount} ] &&  grub-mkconfig -o /${esp_mount}/grub/grub.cfg ||\
+        [ -d /boot/grub ] && grub-mkconfig -o /boot/grub/grub.cfg
+        }
+        Grub_Config_default(){
+        vim /etc/default/grub
+        }
             PS3="$GRUB_menu_message"
-            select grub_options in set_efi_partition install config_defaut config_entry back exit
+            select grub_options in set_efi_partition Grub_Install_EFI Grub_Config_default Grub_Config_entry main_menu Linux_menu back exit
             do
-
-                    case ${grub_options} in
-                        set_efi_partition)
-                        read esp_mount
-                        ;;
-                        install)
-                        [ -d ${esp_mount} ] && grub-install --target=x86_64-efi --efi-directory=${esp_mount} --bootloader-id=grub || grub-install --target=x86_64-efi --efi-directory=/boot/ --bootloader-id=grub
-                        ;;
-                        config_entry)
-                        [ -d ${esp_mount} ] && grub-mkconfig -o /boot/grub/grub.cfg || grub-mkconfig -o /${esp_mount}/grub/grub.cfg
-                        ;;
-                        config_defaut)
-                        vim /etc/default/grub
-                        ;;
-                        back)
-                        Boot_menu
-                        ;;
-                        exit)
-                        menu_exit
-                        ;;
-                        *) menu_invalid 6
-                        ;;
-                    esac
+                local option_amount=6
+                case_menu_boot ${grub_options} Boot_menu
             done
+        }
+            local option_amount=4
+            case_menu_boot $Boot_menu_options Linux_menu
+        done
     }
-        local option_amount=4
-        case_menu_boot $Boot_menu_options Linux_menu
-    done    
 
-}
-
-Linux_menu() {
-    PS3="$Linux_menu_message"
-    select Linux_menu_options in AUR_Kernels Edit_Linux_menu Boot_menu back exit
-    do
     AUR_Kernels() {
         Administrator_message="enter your Administrator password not root-pass if they are different~: "
         PS3="$AUR_Kernels_message"
@@ -219,7 +219,7 @@ Linux_menu() {
             select Module_menu_options in Module_Nvidia Module_Nvidia_modeset Module_Nvidia_uvm Module_Nvidia_drm Module_ext4 Module_btrfs Module_nvme manual_add_Module Clear_Modules Write_Module back exit
             do
                 local option_amount=12
-                case_menu_boot $Module_menu_options Edit_Linux_menu
+                case_menu_boot ${Module_menu_options} Edit_Linux_menu
             done
         }
         #
@@ -271,12 +271,8 @@ Linux_menu() {
             case_menu_boot $edlinux Linux_menu
             done
     }
-    #
-    # Linux_menu
-    #
-        local option_amount=4
-        case_menu_boot $Linux_menu_options main_menu
-     
+    local option_amount=4
+    case_menu_boot $Linux_menu_options main_menu
     done
 }
 
@@ -311,11 +307,10 @@ case_menu_boot(){
             hook_*)
             Buffer_Hooks ${menuoption}
             ;;
+            KBO_*)
+            ;;
             back)
             $preview_menu
-            ;;
-            main_menu)
-            main_menu
             ;;
             exit)
             exit 0
