@@ -140,10 +140,10 @@ pw_root() {
     read passrot
     usermod -p "$passrot" root
 }
-mlist+=" pw_root"
+
 users_add() {
-   #user=$1 ; password=$2 ; groups=$3 ; shell=$4
-   useradd -m -p "$2" -g admin -G $3 -s $4 $1
+   #user=$1 ; password=$2 ; groups=$3 ; shell=$4 ; defaultgroup=$5
+   useradd -m -p "$2" -g $5 -G $3 -s $4 $1
    cp -aT /etc/skel/ /home/$1/
    mountpt="/home/$1/.thumbnails"
    add_tmpfs
@@ -154,13 +154,13 @@ add_admin() {
     name_pass
     if [ -z ${groups+x} ] && [ -z ${shell+x} ]; then
 
-        users_add $user $password "adm,audio,http,ftp,floppy,disk,log,network,rfkill,video,scanner,storage,optical,games,wheel,users,input" /bin/zsh
+        users_add $user $password "adm,audio,http,ftp,floppy,disk,log,network,rfkill,video,scanner,storage,optical,games,wheel,users,input" /bin/zsh admin
     elif [ -z ${groups+x} ] && ! [ -z ${shell+x} ]; then
-         users_add $user $password "adm,audio,http,ftp,floppy,disk,log,network,rfkill,video,scanner,storage,optical,games,wheel,users,input" $shell
+         users_add $user $password "adm,audio,http,ftp,floppy,disk,log,network,rfkill,video,scanner,storage,optical,games,wheel,users,input" $shell admin
     elif ! [ -z ${groups+x} ] && [ -z ${shell+x} ]; then
-         users_add $user $password $groups /bin/zsh
+         users_add $user $password $groups /bin/zsh admin
     else
-        users_add $user $password $groups $shell
+        users_add $user $password $groups $shell admin
     fi
     #useradd -m -p "$password" -g admin -G "" -s /usr/bin/zsh $user
     #cp -aT /etc/skel/ /home/$user/
@@ -169,7 +169,6 @@ add_admin() {
     #
     utlog
 }
-mlist+=" add_admin"
 
 add_user() {
     #
@@ -177,13 +176,13 @@ add_user() {
     name_pass
         if [ -z ${groups+x} ] && [ -z ${shell+x} ]; then
 
-        users_add $user $password "users,http,audio,ftp,disk,network,storage,video,game,scanner,input" /bin/zsh
+        users_add $user $password "users,http,audio,ftp,disk,network,storage,video,game,scanner,input" /bin/zsh standar
     elif [ -z ${groups+x} ] && ! [ -z ${shell+x} ]; then
-         users_add $user $password "users,http,audio,ftp,disk,network,storage,video,game,scanner,input" $shell
+         users_add $user $password "users,http,audio,ftp,disk,network,storage,video,game,scanner,input" $shell standar
     elif ! [ -z ${groups+x} ] && [ -z ${shell+x} ]; then
-         users_add $user $password $groups /bin/zsh
+         users_add $user $password $groups /bin/zsh standar
     else
-        users_add $user $password $groups $shell
+        users_add $user $password $groups $shell standar
     fi
     #useradd -m -p "$password" -g standar -G "users,http,audio,ftp,disk,network,storage,video,game,scanner,input" -s /usr/bin/zsh $user
     #cp -aT /etc/skel/ /home/$user/
@@ -192,7 +191,6 @@ add_user() {
     #
     utlog
 }
-mlist+=" add_user"
 
 add_hostname() {
     #
@@ -270,7 +268,7 @@ auto_config() {
 }
 
 #mlist="zsh_install set_locale ssd_config pwroot add_groups add_admin add_user add_hostname auto_tmpfs auto_aug auto_config enable_services back exit"
-config-menu() {
+Config_menu() {
     clear
     PS3="$msgus"
     #

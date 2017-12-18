@@ -1,0 +1,6 @@
+[catalyst-stable]
+# Maintainer    : Vi0l0
+# Description   : ATI Catalyst proprietary drivers.
+# Key-ID        : 653C094
+SigLevel = Required
+Server = https://mirror.hactar.xyz/Vi0L0/catalyst/$arch

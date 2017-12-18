@@ -28,12 +28,6 @@ ins_libreoffice() { ### Libre Office Liberate your Office ;P
     Pm_i "libreoffice-still"
 }
 #
-ins_alsa() { ### ALSA DRIVER & LIBs
-    echo "Alsa"
-    Pm_i "alsa-lib alsa-oss alsa-plugins alsa-tools alsa-utils jack2 jack2-dbus"
-    echo "Alsa 32-bit-lib"
-    Pm_i "lib32-alsa-oss lib32-alsa-plugins lib32-alsa-lib"
-}
 #
 ins_codecs() { ### MULTIMEDIA CODEC's
     echo "multimedia codec"
@@ -65,7 +59,7 @@ ins_readedid() { echo "installing read-edid" && Pm_i "read-edid i2c-tools" }
 
 #ins_name() { echo "lol" }
 #### VIDEO SUOND SYSTEM
-ins_soundvid() { echo "Sound & Video" && ins_alsa && ins_codecs && ins_vlc }
+ins_soundvid() { echo "Sound & Video" && ins_codecs && ins_vlc }
 
 auto_pacman() {
     echo "Initiate AUTO FUNCTION pacman.sh"
@@ -138,7 +132,7 @@ ins_OhMyZsh() {
     echo "FINIDHED $0"
 }
 
-pacman_menu() {
+Pacman_menu() {
     PS3="$pacmenumsg"
     select pcmenu in ins_OhMyZsh ins_repo ins_intel ins_bluez ins_acl ins_archive ins_yaourt ins_pacgui ins_xyne ins_readedid ins_soundvid auto_pacman back exit
     do

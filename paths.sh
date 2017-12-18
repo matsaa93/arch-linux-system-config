@@ -21,7 +21,7 @@ udev="/etc/udev/rules.d"
 pacc="$aretc/pacman.conf"
 ## cron
 orgcrond="$resources/cron"
-
+pacman_conf="/etc/pacman.conf"
 ### /boot
 arboot="$resources/boot"
 ## #END PATH set
@@ -39,7 +39,7 @@ inlog() { echo "Starting $0~: $1" >> $tmpdr/install.log }
 utlog() { echo "Finished $0~: $1" >> $tmpdr/install.log }
 main_menu() {
     PS3="$msgmain"
-select main_menu_option in config-menu disk-menu boot-menu
+select main_menu_option in Config_menu Disk_menu Linux_menu Linux_Drivers_menu Pacman_menu
 do
     clear
     x=$main_menu_option

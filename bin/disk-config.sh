@@ -255,7 +255,7 @@ auto_conf() {
 
 }
 ### END AUTO_FUNCTION SECTION
-disk-menu() {
+Disk_menu() {
     #
     ### DISK MENU FUNCTION
     #
