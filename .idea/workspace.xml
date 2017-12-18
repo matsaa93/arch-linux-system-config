@@ -2,18 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="64186c46-46a0-470b-9eb0-8d3800f99be1" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/bin/software.sh" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/resources/etc/pacman.conf/catalyst-hd234k.repo" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/resources/etc/pacman.conf/catalyst-stable.repo" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/resources/etc/pacman.conf/catalyst.repo" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/mkinicpio.sh" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/arch-linux-system-config.iml" afterPath="$PROJECT_DIR$/arch-linux-system-config.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/bin/boot.sh" afterPath="$PROJECT_DIR$/bin/boot.sh" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/bin/config-script.sh" afterPath="$PROJECT_DIR$/bin/config-script.sh" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/bin/disk-config.sh" afterPath="$PROJECT_DIR$/bin/disk-config.sh" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/bin/pacman.sh" afterPath="$PROJECT_DIR$/bin/pacman.sh" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/paths.sh" afterPath="$PROJECT_DIR$/paths.sh" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -485,7 +474,14 @@
       <option name="project" value="LOCAL" />
       <updated>1511387060093</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="finished mostly with boot.sh&#10;done some cleanup&#10;TODO:&#10;clean up some more&#10;make a main menu for the functions">
+      <created>1513569601642</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1513569601642</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TodoView">
