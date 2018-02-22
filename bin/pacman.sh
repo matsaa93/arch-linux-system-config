@@ -17,11 +17,7 @@ ins_repo() { ### REPOSETORY INSTALLL
     Pm_db
     #ins="archlinuxcn-keyring" && Pm_i
 }
-#
-ins_intel() { ### INTEL MICROCODE
-    echo "Intel Microcode"
-    Pm_i "intel-ucode"
-}
+
 #
 ins_libreoffice() { ### Libre Office Liberate your Office ;P
     echo "Libre Office"

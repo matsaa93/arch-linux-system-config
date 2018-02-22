@@ -2,7 +2,7 @@
 #
 
 Linux_menu() {
-
+# TODO: Add options for microcode and cleanup bootloader configurations
 
     Boot_menu() {
 
@@ -38,7 +38,7 @@ Linux_menu() {
 
             loadmdedit() {
                 echo "timeout 10" > /boot/loader/loader.conf
-                echo "default $loadbt.conf" >> /boot/loader/loader.conf
+                echo "default ${loadbt}.conf" >> /boot/loader/loader.conf
             }
 
                 Systemd_bootloader_config() {
