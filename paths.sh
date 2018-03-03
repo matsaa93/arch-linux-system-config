@@ -55,5 +55,23 @@ do
 done
 }
 
+multimenu(){
+ local options=();
+ local pre_menu=$1;
+ local menu_message=$2;
+ local menu_option=$3;
+ local option_amount=$4;
+ local cin; local i=0;
+ options={$5}
+ for (( cin=1; cin<=$option_amount; cin++ )) ;do
+ 	echo options[$i]
+ 	case $x in
+ 	[])
+ 	   ;;
+ 	esac
+
+ done
+
+}
 
 echo "Finished start.sh"

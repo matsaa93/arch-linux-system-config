@@ -351,7 +351,7 @@ Kernels_Hardware_menu() {
         select Linux_Kernels_menu_options in OFFICIAL_Kernels AUR_Kernels back exit
         do
             # case_menu_boot AURK_PACKAGE_${OFFICIAL_Kernels_options} Linux_menu
-            case_menu_hardware Kernels_Hardware_menu ${OFFICIAL_Kernels_options}
+            case_menu_hardware Kernels_Hardware_menu ${Linux_Kernels_menu_options}
         done
     }
     # Kernels_Hardware_menu
